@@ -6,7 +6,8 @@
 
 int main()
 {
-    sf::RenderWindow window(sf::VideoMode(800,600),"ReIGen");
+    sf::RenderWindow window(sf::VideoMode(800,600),"ReIGen", sf::Style::Titlebar|
+                                                             sf::Style::Close);
 
     ImGui::SFML::Init(window);
 
