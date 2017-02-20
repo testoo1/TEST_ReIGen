@@ -4,16 +4,78 @@
 #include <SFML/Graphics.hpp>
 #include <SFML/System/Clock.hpp>
 
+// TEMP
+enum class Direction{
+    HORIZONTAL,
+    VERTICAL,
+    BOTH
+};
+
+void drawLine(sf::RenderWindow &window, sf::RectangleShape &line,
+              const sf::Color &color=sf::Color::White, const int step=10,
+              const Direction direction=Direction::BOTH, const int lineWidth=1)
+{
+    if(direction == Direction::BOTH){
+        drawLine(window, line, color, step, Direction::HORIZONTAL);
+        drawLine(window, line, color, step, Direction::VERTICAL);
+    }
+    else{
+        sf::Vector2u winSize{window.getSize()};
+        int edge{0};
+
+        line.setFillColor(color);
+
+        switch(direction){
+            case Direction::HORIZONTAL:
+                edge = window.getSize().x;
+                line.setSize(sf::Vector2f(edge,lineWidth));
+                break;
+            case Direction::VERTICAL:
+                edge = window.getSize().y;
+                line.setSize(sf::Vector2f(lineWidth,edge));
+                break;
+        }
+
+
+        for(int i=0; i<edge; i+=step){
+            switch(direction){
+                case Direction::HORIZONTAL:
+                    line.setPosition(0,i);
+                    break;
+                case Direction::VERTICAL:
+                    line.setPosition(i,0);
+                    break;
+            }
+            window.draw(line);
+        }
+    }
+
+}
+
+
+void drawGrid(sf::RenderWindow &window)
+{
+    sf::RectangleShape line;
+
+    int steps[]{12,24,96};
+    sf::Color colors[]{sf::Color {35,85,125},
+                       sf::Color {40,90,130},
+                       sf::Color {60,110,150}};
+
+    for(int i=0;i<3;++i)
+        drawLine(window,line,colors[i],steps[i]);
+}
+
+
 int main()
 {
     sf::RenderWindow window(sf::VideoMode(800,600),"ReIGen", sf::Style::Titlebar|
                                                              sf::Style::Close);
+    sf::Color bgColor(30,80,120);
 
     ImGui::SFML::Init(window);
 
     sf::Clock deltaClock;
-
-    window.resetGLStates();
 
     while (window.isOpen())
     {
@@ -38,7 +100,8 @@ int main()
 
         ImGui::End();
 
-        window.clear();
+        window.clear(bgColor);
+        drawGrid(window);
         ImGui::Render();
         window.display();
     }
