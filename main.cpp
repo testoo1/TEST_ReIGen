@@ -94,6 +94,13 @@ void drawFigure(      sf::RenderWindow &window,
 
     sf::Vector2i point(position);
 
+    if (depth == 0){
+        element.setSize(sf::Vector2f(size.x,size.y));
+        element.setPosition(sf::Vector2f(position.x,position.y));
+        window.draw(element);
+        return;
+    }
+
     for (int i=0; i<9; ++i)
     {
         if (i != 4){
@@ -163,7 +170,7 @@ int main()
 
         window.clear(bgColor);
         drawGrid(window);
-        drawFigure(window, figurePosition, figureSize, 4);
+        drawFigure(window, figurePosition, figureSize, 0);
         ImGui::Render();
         window.display();
     }
