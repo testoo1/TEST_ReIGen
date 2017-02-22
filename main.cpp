@@ -4,6 +4,8 @@
 #include <SFML/Graphics.hpp>
 #include <SFML/System/Clock.hpp>
 
+#define IM_ARRAYSIZE(_ARR)  ((int)(sizeof(_ARR)/sizeof(*_ARR)))
+
 // TEMP
 enum class Direction{
     HORIZONTAL,
@@ -145,6 +147,32 @@ int main()
                                 canvasCenter.y - figureSize.y/2);
 
 
+    const char* type[]{"Curve","Gasket"};
+    int typeIndex = 1;
+
+    const char* gasketSubType[]{"Sierpinski sieves","Sierpinski carpet"};
+    int gasketSubTypeIndex = 1;
+
+    int recDepth = 5;
+
+    sf::Color fillColor{255,255,255,255};
+    int imGui_fillColor[4]{fillColor.r,
+                           fillColor.g,
+                           fillColor.b,
+                           fillColor.a};
+
+    sf::Color outlineColor{0,0,0,255};
+    int imGui_outlineColor[4]{outlineColor.r,
+                              outlineColor.g,
+                              outlineColor.b,
+                              outlineColor.a};
+
+    int outlineThickness{0};
+
+    ImGuiStyle& style = ImGui::GetStyle();
+    style.WindowPadding.x = 32;
+    // style.ItemSpacing.y   = 0;
+
     while (window.isOpen())
     {
         sf::Event event;
@@ -158,19 +186,63 @@ int main()
 
         ImGui::SFML::Update(window, deltaClock.restart());
 
+
         ImGui::SetNextWindowPos(ImVec2(600,0));
         ImGui::SetNextWindowSize(ImVec2(uiWidth,600));
+
         ImGui::Begin("Settings", false, ImGuiWindowFlags_NoTitleBar|
                                         ImGuiWindowFlags_NoResize|
                                         ImGuiWindowFlags_NoMove|
                                         ImGuiWindowFlags_NoCollapse|
                                         ImGuiWindowFlags_ShowBorders);
+        ImGui::Text("");
+        ImGui::Text("Type");
+        ImGui::Combo("##Type", &typeIndex, type,
+                     IM_ARRAYSIZE(type));
+
+        ImGui::Text("");
+        ImGui::Text("Subtype");
+        ImGui::Combo("##Subtype", &gasketSubTypeIndex, gasketSubType,
+                     IM_ARRAYSIZE(gasketSubType));
+
+        ImGui::Text("");
+        ImGui::Separator();
+        ImGui::Text("");
+
+        ImGui::Text("Recursion depth");
+        ImGui::SliderInt("##Recursion depth", &recDepth, 0, 5);
+        ImGui::Text("");
+
+        ImGui::Separator();
+
+        ImGui::Text("");
+        ImGui::Text("Fill Color");
+        if(ImGui::DragInt4("##Fill Color", imGui_fillColor, 1, 0, 255)){
+            fillColor.r = imGui_fillColor[0];
+            fillColor.g = imGui_fillColor[1];
+            fillColor.b = imGui_fillColor[2];
+            fillColor.a = imGui_fillColor[3];
+        }
+        ImGui::Text("Outline Color");
+        if(ImGui::DragInt4("##Outline Color", imGui_outlineColor, 1, 0, 255)){
+            outlineColor.r = imGui_outlineColor[0];
+            outlineColor.g = imGui_outlineColor[1];
+            outlineColor.b = imGui_outlineColor[2];
+            outlineColor.a = imGui_outlineColor[3];
+        }
+
+        ImGui::Text("");
+        ImGui::Text("Outline Thickness");
+        ImGui::SliderInt("##outline Thickness", &outlineThickness, -16, 16);
 
         ImGui::End();
 
+
         window.clear(bgColor);
         drawGrid(window);
-        drawFigure(window, figurePosition, figureSize, 0);
+        drawFigure(window, figurePosition, figureSize, recDepth,
+                    fillColor, outlineThickness, outlineColor);
+        // ImGui::ShowTestWindow();
         ImGui::Render();
         window.display();
     }
