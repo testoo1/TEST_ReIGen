@@ -86,6 +86,8 @@ class Figure{
 public:
     sf::Vector2i _center;
     sf::Vector2i _size;
+    sf::Vector2i _initSize;
+    float _scale;
 
     int _depth;
 
@@ -95,16 +97,17 @@ public:
     sf::Vector2i _startPoint;
 
     Figure(const sf::Vector2i   &center,
-           const sf::Vector2i   &size=sf::Vector2i(450,450),
+           const sf::Vector2i   &initSize=sf::Vector2i(450,450),
 
            const int            depth=0,
 
            const sf::Color      &color=sf::Color::White,
            const Outline        &outline=Outline()):
-                _center(center), _size(size),
+                _center(center), _initSize(initSize), _scale(1),
                 _color(color), _outline(outline),
-                _depth(depth) 
+                _depth(depth)
     {
+        calcSize();
         calcStartPoint();
     }
 
@@ -112,6 +115,11 @@ public:
     void draw(sf::RenderWindow &window, int depth,
               sf::Vector2i position, sf::Vector2i size,
               int thickness);
+
+    void calcSize(){
+        _size.x = _initSize.x*_scale;
+        _size.y = _initSize.y*_scale;
+    }
 
     void calcStartPoint(){
         _startPoint.x = _center.x - _size.x/2;
@@ -244,6 +252,13 @@ int main()
         ImGui::Text("Recursion depth");
         ImGui::SliderInt("##Recursion depth", &SierpinskiCarpet._depth, 0, 5);
         ImGui::Text("");
+
+        ImGui::Text("Image Scale");
+        if(ImGui::SliderFloat("##Image Scale", &SierpinskiCarpet._scale, 0.5, 2))
+        {
+           SierpinskiCarpet.calcSize();
+           SierpinskiCarpet.calcStartPoint();
+        }
 
         ImGui::Text("");
         ImGui::Separator();
