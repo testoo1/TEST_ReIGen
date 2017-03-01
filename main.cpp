@@ -78,16 +78,12 @@ void drawFigure(      sf::RenderWindow &window,
                 const sf::Vector2i     &size,
                 const int              depth,
                 const sf::Color        &fillColor=sf::Color::White,
-                const int              outlineThickness=1,
+                const int              outlineThickness=-1,
                 const sf::Color        &outlineColor=sf::Color(0,0,0,0))
 {
     sf::RectangleShape element;
 
-    sf::Vector2i outerSize(size.x/3, size.y/3);
-    sf::Vector2i innerSize(outerSize.x - outlineThickness*2,
-                           outerSize.y - outlineThickness*2);
-
-    element.setSize(sf::Vector2f(innerSize.x,innerSize.y));
+    element.setSize(sf::Vector2f(size.x/3, size.y/3));
     element.setFillColor(fillColor);
 
     element.setOutlineThickness(outlineThickness);
@@ -107,7 +103,7 @@ void drawFigure(      sf::RenderWindow &window,
     {
         if (i != 4){
             if (i!= 0 && !(i%3)){
-                point.y += outerSize.x;
+                point.y += size.x/3;
                 point.x =  position.x;
             }
 
@@ -116,13 +112,13 @@ void drawFigure(      sf::RenderWindow &window,
             if (depth == 1)
                 window.draw(element);
             else{
-                int thickness = outlineThickness > 1? outlineThickness/2 :
-                                                      outlineThickness;
-                drawFigure(window, point, outerSize, depth-1,
+                int thickness = outlineThickness < -1? outlineThickness/2 :
+                                                       outlineThickness;
+                drawFigure(window, point, size/3, depth-1,
                            fillColor, thickness, outlineColor);
             }
          }
-         point.x += outerSize.y;
+         point.x += size.y/3;
     }
 }
 
@@ -233,7 +229,7 @@ int main()
 
         ImGui::Text("");
         ImGui::Text("Outline Thickness");
-        ImGui::SliderInt("##outline Thickness", &outlineThickness, -16, 16);
+        ImGui::SliderInt("##outline Thickness", &outlineThickness, 0, 16);
 
         ImGui::End();
 
@@ -241,7 +237,7 @@ int main()
         window.clear(bgColor);
         drawGrid(window);
         drawFigure(window, figurePosition, figureSize, recDepth,
-                    fillColor, outlineThickness, outlineColor);
+                    fillColor, -outlineThickness, outlineColor);
         // ImGui::ShowTestWindow();
         ImGui::Render();
         window.display();
