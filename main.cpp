@@ -69,78 +69,130 @@ void drawGrid(sf::RenderWindow &window)
 }
 
 
+
+
+class Outline
+{
+public:
+    sf::Color _color;
+    int _thickness;
+
+    Outline(const int thickness=1, const sf::Color color=sf::Color::Black):
+        _color(color), _thickness(thickness) {}
+};
+
+
+class Figure{
+public:
+    sf::Vector2i _center;
+    sf::Vector2i _size;
+
+    int _depth;
+
+    sf::Color _color;
+    Outline _outline;
+
+    sf::Vector2i _startPoint;
+
+    Figure(const sf::Vector2i   &center,
+           const sf::Vector2i   &size=sf::Vector2i(450,450),
+
+           const int            depth=0,
+
+           const sf::Color      &color=sf::Color::White,
+           const Outline        &outline=Outline()):
+                _center(center), _size(size),
+                _color(color), _outline(outline),
+                _depth(depth) 
+    {
+        calcStartPoint();
+    }
+
+    void draw(sf::RenderWindow &window);
+    void draw(sf::RenderWindow &window, int depth,
+              sf::Vector2i position, sf::Vector2i size,
+              int thickness);
+
+    void calcStartPoint(){
+        _startPoint.x = _center.x - _size.x/2;
+        _startPoint.y = _center.y - _size.y/2;
+    }
+};
+
+
 // Exist some problem with rounding of <Vector2i size> variable
 // For example:
 // if init <size.x> value = 200, is losed 2 pixel when program
 // step into next recurtion level (200/3 -> 198)
-void drawFigure(      sf::RenderWindow &window,
-                const sf::Vector2i     &position,
-                const sf::Vector2i     &size,
-                const int              depth,
-                const sf::Color        &fillColor=sf::Color::White,
-                const int              outlineThickness=-1,
-                const sf::Color        &outlineColor=sf::Color(0,0,0,0))
+void Figure::draw(sf::RenderWindow &window)
+{
+    draw(window, _depth, _startPoint, _size, _outline._thickness);
+}
+
+void Figure::draw(sf::RenderWindow &window, int depth,
+                  sf::Vector2i position, sf::Vector2i size,
+                  int thickness)
 {
     sf::RectangleShape element;
 
-    element.setSize(sf::Vector2f(size.x/3, size.y/3));
-    element.setFillColor(fillColor);
+    element.setFillColor(_color);
 
-    element.setOutlineThickness(outlineThickness);
-    element.setOutlineColor(outlineColor);
-
-
-    sf::Vector2i point(position);
+    element.setOutlineThickness(thickness);
+    element.setOutlineColor(_outline._color);
 
     if (depth == 0){
         element.setSize(sf::Vector2f(size.x,size.y));
-        element.setPosition(sf::Vector2f(position.x,position.y));
+        element.setPosition(sf::Vector2f(_startPoint.x,_startPoint.y));
         window.draw(element);
         return;
     }
 
-    for (int i=0; i<9; ++i)
-    {
-        if (i != 4){
-            if (i!= 0 && !(i%3)){
-                point.y += size.x/3;
-                point.x =  position.x;
-            }
+    element.setSize(sf::Vector2f(size.x/3, size.y/3));
+    sf::Vector2i point(position);
 
+    for (int i=1; i<=9; ++i)
+    {
+        if (i != 5){
             element.setPosition(sf::Vector2f(point.x,point.y));
 
             if (depth == 1)
                 window.draw(element);
             else{
-                int thickness = outlineThickness < -1? outlineThickness/2 :
-                                                       outlineThickness;
-                drawFigure(window, point, size/3, depth-1,
-                           fillColor, thickness, outlineColor);
+
+                draw(window, depth-1, point, size/3, thickness/2);
             }
          }
-         point.x += size.y/3;
+        if (!(i%3)){
+            point.y += size.x/3;
+            point.x =  position.x;
+            continue;
+        }
+        point.x += size.y/3;
     }
 }
 
 
 int main()
 {
+    // SFML and ImGui Init
     sf::RenderWindow window(sf::VideoMode(800,600),"ReIGen", sf::Style::Titlebar|
                                                              sf::Style::Close);
     ImGui::SFML::Init(window);
 
-
-    sf::Color bgColor(30,80,120);
-    int uiWidth = 200;
-
     sf::Clock deltaClock;
 
 
+    // Set color settings
+    sf::Color bgColor(30,80,120);
+    int imGui_FillColor[4]{255,255,255,255};
+    int imGui_outlineColor[4]{0,0,0,255};
+
+    // Set Figure settings
+    int uiWidth = 200;
     sf::Vector2i canvasCenter((window.getSize().x - uiWidth)/2,
                                window.getSize().y/2);
-    sf::Vector2i figureSize(450,450);
-    sf::Vector2i figurePosition(canvasCenter.x - figureSize.x/2,
-                                canvasCenter.y - figureSize.y/2);
+
+    Figure  SierpinskiCarpet(canvasCenter, sf::Vector2i(450,450), 5);
 
 
     const char* type[]{"Curve","Gasket"};
@@ -148,22 +200,6 @@ int main()
 
     const char* gasketSubType[]{"Sierpinski sieves","Sierpinski carpet"};
     int gasketSubTypeIndex = 1;
-
-    int recDepth = 5;
-
-    sf::Color fillColor{255,255,255,255};
-    int imGui_fillColor[4]{fillColor.r,
-                           fillColor.g,
-                           fillColor.b,
-                           fillColor.a};
-
-    sf::Color outlineColor{0,0,0,255};
-    int imGui_outlineColor[4]{outlineColor.r,
-                              outlineColor.g,
-                              outlineColor.b,
-                              outlineColor.a};
-
-    int outlineThickness{0};
 
     ImGuiStyle& style = ImGui::GetStyle();
     style.WindowPadding.x = 32;
@@ -206,38 +242,40 @@ int main()
         ImGui::Text("");
 
         ImGui::Text("Recursion depth");
-        ImGui::SliderInt("##Recursion depth", &recDepth, 0, 5);
+        ImGui::SliderInt("##Recursion depth", &SierpinskiCarpet._depth, 0, 5);
         ImGui::Text("");
 
+        ImGui::Text("");
         ImGui::Separator();
-
         ImGui::Text("");
+
         ImGui::Text("Fill Color");
-        if(ImGui::DragInt4("##Fill Color", imGui_fillColor, 1, 0, 255)){
-            fillColor.r = imGui_fillColor[0];
-            fillColor.g = imGui_fillColor[1];
-            fillColor.b = imGui_fillColor[2];
-            fillColor.a = imGui_fillColor[3];
+        if(ImGui::DragInt4("##Fill Color", imGui_FillColor, 1, 0, 255)){
+           SierpinskiCarpet._color.r = imGui_FillColor[0];
+           SierpinskiCarpet._color.g = imGui_FillColor[1];
+           SierpinskiCarpet._color.b = imGui_FillColor[2];
+           SierpinskiCarpet._color.a = imGui_FillColor[3];
         }
+
         ImGui::Text("Outline Color");
         if(ImGui::DragInt4("##Outline Color", imGui_outlineColor, 1, 0, 255)){
-            outlineColor.r = imGui_outlineColor[0];
-            outlineColor.g = imGui_outlineColor[1];
-            outlineColor.b = imGui_outlineColor[2];
-            outlineColor.a = imGui_outlineColor[3];
+           SierpinskiCarpet._outline._color.r = imGui_outlineColor[0];
+           SierpinskiCarpet._outline._color.g = imGui_outlineColor[1];
+           SierpinskiCarpet._outline._color.b = imGui_outlineColor[2];
+           SierpinskiCarpet._outline._color.a = imGui_outlineColor[3];
         }
 
         ImGui::Text("");
         ImGui::Text("Outline Thickness");
-        ImGui::SliderInt("##outline Thickness", &outlineThickness, 0, 16);
+        ImGui::SliderInt("##outline Thickness",
+                         &SierpinskiCarpet._outline._thickness, 0, -16);
 
         ImGui::End();
 
 
         window.clear(bgColor);
         drawGrid(window);
-        drawFigure(window, figurePosition, figureSize, recDepth,
-                    fillColor, -outlineThickness, outlineColor);
+        SierpinskiCarpet.draw(window);
         // ImGui::ShowTestWindow();
         ImGui::Render();
         window.display();
