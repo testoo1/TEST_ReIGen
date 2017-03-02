@@ -212,6 +212,8 @@ int main()
     Background bg;
     int imGui_FillColor[4]{255,255,255,255};
     int imGui_outlineColor[4]{0,0,0,255};
+    int imGui_bgColor[4]{bg.color().r, bg.color().g, bg.color().b, bg.color().a};
+
 
     // Set Figure settings
     int uiWidth = 200;
@@ -303,6 +305,15 @@ int main()
         ImGui::SliderInt("##outline Thickness",
                          &SierpinskiCarpet._outline._thickness, 0, -16);
 
+        ImGui::Text("");
+        ImGui::Separator();
+        ImGui::Text("");
+
+        ImGui::Text("Background color");
+        if(ImGui::DragInt4("##Background color", imGui_bgColor, 1, 0, 255)){
+            bg.color(sf::Color(imGui_bgColor[0],imGui_bgColor[1],
+                               imGui_bgColor[2],imGui_bgColor[3]));
+        }
         ImGui::End();
 
 
