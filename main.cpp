@@ -6,69 +6,87 @@
 
 #define IM_ARRAYSIZE(_ARR)  ((int)(sizeof(_ARR)/sizeof(*_ARR)))
 
-// TEMP
-enum class Direction{
-    HORIZONTAL,
-    VERTICAL,
-    BOTH
+class Grid
+{
+private:
+    sf::RectangleShape _line;
+
+    int _step;
+    int _thickness;
+    sf::Color _color;
+
+public:
+    Grid(sf::Color color=sf::Color::White, int width=1):
+        _color(color), _thickness(width){}
+// set
+    void step(int step){_step = step;}
+    void thickness(int thickness){_thickness = thickness;}
+    void color(sf::Color color){_color = color;}
+// get
+    int step(){return _step;}
+    int width(){return _thickness;}
+    sf::Color color(){return _color;}
+
+    void draw(sf::RenderWindow &window);
 };
 
-void drawLine(sf::RenderWindow &window, sf::RectangleShape &line,
-              const sf::Color &color=sf::Color::White, const int step=10,
-              const Direction direction=Direction::BOTH, const int lineWidth=1)
+void Grid::draw(sf::RenderWindow &window)
 {
-    if(direction == Direction::BOTH){
-        drawLine(window, line, color, step, Direction::HORIZONTAL);
-        drawLine(window, line, color, step, Direction::VERTICAL);
-    }
-    else{
-        sf::Vector2u winSize{window.getSize()};
-        int edge{0};
+    _line.setFillColor(_color);
 
-        line.setFillColor(color);
-
-        switch(direction){
-            case Direction::HORIZONTAL:
-                edge = window.getSize().x;
-                line.setSize(sf::Vector2f(edge,lineWidth));
+    for (int dir=0; dir<2; ++dir){
+        unsigned int limit;
+        switch(dir){
+            case 0:
+                limit = window.getSize().y;
+                _line.setSize(sf::Vector2f(limit, _thickness));
                 break;
-            case Direction::VERTICAL:
-                edge = window.getSize().y;
-                line.setSize(sf::Vector2f(lineWidth,edge));
+            case 1:
+                limit = window.getSize().x;
+                _line.setSize(sf::Vector2f(_thickness, limit));
                 break;
         }
-
-
-        for(int i=0; i<edge; i+=step){
-            switch(direction){
-                case Direction::HORIZONTAL:
-                    line.setPosition(0,i);
-                    break;
-                case Direction::VERTICAL:
-                    line.setPosition(i,0);
-                    break;
-            }
-            window.draw(line);
+        for (int i=0; i<limit; i+= _step){
+            switch(dir){
+                case 0: _line.setPosition(0,i); break;
+                case 1: _line.setPosition(i,0); break;
+                }
+            window.draw(_line);
         }
     }
-
 }
 
 
-void drawGrid(sf::RenderWindow &window)
+class Background
 {
-    sf::RectangleShape line;
+private:
+    Grid  _grid;
+    sf::Color _color;
 
-    int steps[]{12, 24, 96};
-    sf::Color colors[]{sf::Color {35,85,125},
-                       sf::Color {40,90,130},
-                       sf::Color {60,110,150}};
+    int _step[3] {12,24,96};
+    int _grad[3] {5,10,25};
 
-    for(int i=0;i<3;++i)
-        drawLine(window, line,colors[i], steps[i]);
+public:
+    Background(sf::Color color=sf::Color(30,80,120)) : _color(color){}
+// set
+    void color(sf::Color color){_color = color;}
+// get
+    sf::Color color(){return _color;}
+
+    void draw(sf::RenderWindow &window);
+};
+
+void Background::draw(sf::RenderWindow &window)
+{
+    window.clear(_color);
+
+    for (int i=0;i<3;++i){
+        _grid.step(_step[i]);
+        _grid.color(_color + sf::Color(_grad[i], _grad[i], _grad[i]));
+
+        _grid.draw(window);
+    }
 }
-
-
 
 
 class Outline
@@ -191,7 +209,7 @@ int main()
 
 
     // Set color settings
-    sf::Color bgColor(30,80,120);
+    Background bg;
     int imGui_FillColor[4]{255,255,255,255};
     int imGui_outlineColor[4]{0,0,0,255};
 
@@ -288,8 +306,8 @@ int main()
         ImGui::End();
 
 
-        window.clear(bgColor);
-        drawGrid(window);
+        window.clear();
+        bg.draw(window);
         SierpinskiCarpet.draw(window);
         // ImGui::ShowTestWindow();
         ImGui::Render();
