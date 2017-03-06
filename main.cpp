@@ -27,10 +27,10 @@ public:
     int width(){return _thickness;}
     sf::Color color(){return _color;}
 
-    void draw(sf::RenderWindow &window);
+    void draw(sf::RenderTarget &window);
 };
 
-void Grid::draw(sf::RenderWindow &window)
+void Grid::draw(sf::RenderTarget &window)
 {
     _line.setFillColor(_color);
 
@@ -66,26 +66,32 @@ private:
     int _step[3] {12,24,96};
     int _grad[3] {5,10,25};
 
+    bool _needRedraw=true;
+
 public:
     Background(sf::Color color=sf::Color(30,80,120)) : _color(color){}
 // set
     void color(sf::Color color){_color = color;}
+    void needRedraw(){_needRedraw=true;}
 // get
     sf::Color color(){return _color;}
 
-    void draw(sf::RenderWindow &window);
+    void draw(sf::RenderTarget &window);
 };
 
-void Background::draw(sf::RenderWindow &window)
+void Background::draw(sf::RenderTarget &window)
 {
-    window.clear(_color);
+    if(_needRedraw){
+        window.clear(_color);
 
-    for (int i=0;i<3;++i){
-        _grid.step(_step[i]);
-        _grid.color(_color + sf::Color(_grad[i], _grad[i], _grad[i]));
+        for (int i=0;i<3;++i){
+            _grid.step(_step[i]);
+            _grid.color(_color + sf::Color(_grad[i], _grad[i], _grad[i]));
 
-        _grid.draw(window);
+            _grid.draw(window);
+        }
     }
+    _needRedraw = false;
 }
 
 
@@ -114,6 +120,8 @@ public:
 
     sf::Vector2i _startPoint;
 
+    bool _needRedraw=true;
+
     Figure(const sf::Vector2i   &center,
            const sf::Vector2i   &initSize=sf::Vector2i(450,450),
 
@@ -129,8 +137,8 @@ public:
         calcStartPoint();
     }
 
-    void draw(sf::RenderWindow &window);
-    void draw(sf::RenderWindow &window, int depth,
+    void draw(sf::RenderTarget &window);
+    void draw(sf::RenderTarget &window, int depth,
               sf::Vector2i position, sf::Vector2i size,
               int thickness);
 
@@ -143,6 +151,8 @@ public:
         _startPoint.x = _center.x - _size.x/2;
         _startPoint.y = _center.y - _size.y/2;
     }
+
+    void needRedraw(){_needRedraw=true;}
 };
 
 
@@ -150,12 +160,16 @@ public:
 // For example:
 // if init <size.x> value = 200, is losed 2 pixel when program
 // step into next recurtion level (200/3 -> 198)
-void Figure::draw(sf::RenderWindow &window)
+void Figure::draw(sf::RenderTarget &window)
 {
-    draw(window, _depth, _startPoint, _size, _outline._thickness);
+    if(_needRedraw){
+        window.clear(sf::Color(0,0,0,0));
+        draw(window, _depth, _startPoint, _size, _outline._thickness);
+        _needRedraw = false;
+    }
 }
 
-void Figure::draw(sf::RenderWindow &window, int depth,
+void Figure::draw(sf::RenderTarget &window, int depth,
                   sf::Vector2i position, sf::Vector2i size,
                   int thickness)
 {
@@ -203,10 +217,16 @@ int main()
     // SFML and ImGui Init
     sf::RenderWindow window(sf::VideoMode(800,600),"ReIGen", sf::Style::Titlebar|
                                                              sf::Style::Close);
+    window.setVerticalSyncEnabled(true);
+
     ImGui::SFML::Init(window);
 
     sf::Clock deltaClock;
 
+    std::array<sf::RenderTexture,2> renderTexture;  // [0] -> Background, [1] -> Figure
+
+    for(auto &texture: renderTexture)
+        texture.create(window.getSize().x, window.getSize().y);
 
     // Set color settings
     Background bg;
@@ -232,6 +252,7 @@ int main()
     ImGuiStyle& style = ImGui::GetStyle();
     style.WindowPadding.x = 32;
     // style.ItemSpacing.y   = 0;
+
 
     while (window.isOpen())
     {
@@ -270,14 +291,18 @@ int main()
         ImGui::Text("");
 
         ImGui::Text("Recursion depth");
-        ImGui::SliderInt("##Recursion depth", &SierpinskiCarpet._depth, 0, 5);
+        if(ImGui::SliderInt("##Recursion depth", &SierpinskiCarpet._depth, 0, 5)){
+            SierpinskiCarpet.needRedraw();
+        }
         ImGui::Text("");
 
         ImGui::Text("Image Scale");
         if(ImGui::SliderFloat("##Image Scale", &SierpinskiCarpet._scale, 0.5, 2))
         {
-           SierpinskiCarpet.calcSize();
-           SierpinskiCarpet.calcStartPoint();
+            SierpinskiCarpet.calcSize();
+            SierpinskiCarpet.calcStartPoint();
+
+            SierpinskiCarpet.needRedraw();
         }
 
         ImGui::Text("");
@@ -286,24 +311,30 @@ int main()
 
         ImGui::Text("Fill Color");
         if(ImGui::DragInt4("##Fill Color", imGui_FillColor, 1, 0, 255)){
-           SierpinskiCarpet._color.r = imGui_FillColor[0];
-           SierpinskiCarpet._color.g = imGui_FillColor[1];
-           SierpinskiCarpet._color.b = imGui_FillColor[2];
-           SierpinskiCarpet._color.a = imGui_FillColor[3];
+            SierpinskiCarpet._color.r = imGui_FillColor[0];
+            SierpinskiCarpet._color.g = imGui_FillColor[1];
+            SierpinskiCarpet._color.b = imGui_FillColor[2];
+            SierpinskiCarpet._color.a = imGui_FillColor[3];
+
+            SierpinskiCarpet.needRedraw();
         }
 
         ImGui::Text("Outline Color");
         if(ImGui::DragInt4("##Outline Color", imGui_outlineColor, 1, 0, 255)){
-           SierpinskiCarpet._outline._color.r = imGui_outlineColor[0];
-           SierpinskiCarpet._outline._color.g = imGui_outlineColor[1];
-           SierpinskiCarpet._outline._color.b = imGui_outlineColor[2];
-           SierpinskiCarpet._outline._color.a = imGui_outlineColor[3];
+            SierpinskiCarpet._outline._color.r = imGui_outlineColor[0];
+            SierpinskiCarpet._outline._color.g = imGui_outlineColor[1];
+            SierpinskiCarpet._outline._color.b = imGui_outlineColor[2];
+            SierpinskiCarpet._outline._color.a = imGui_outlineColor[3];
+
+            SierpinskiCarpet.needRedraw();
         }
 
         ImGui::Text("");
         ImGui::Text("Outline Thickness");
-        ImGui::SliderInt("##outline Thickness",
-                         &SierpinskiCarpet._outline._thickness, 0, -16);
+        if(ImGui::SliderInt("##outline Thickness",
+                         &SierpinskiCarpet._outline._thickness, 0, -16)){
+            SierpinskiCarpet.needRedraw();
+        }
 
         ImGui::Text("");
         ImGui::Separator();
@@ -313,15 +344,25 @@ int main()
         if(ImGui::DragInt4("##Background color", imGui_bgColor, 1, 0, 255)){
             bg.color(sf::Color(imGui_bgColor[0],imGui_bgColor[1],
                                imGui_bgColor[2],imGui_bgColor[3]));
+
+            bg.needRedraw();
         }
         ImGui::End();
 
 
+        bg.draw(renderTexture[0]);
+        SierpinskiCarpet.draw(renderTexture[1]);
+
         window.clear();
-        bg.draw(window);
-        SierpinskiCarpet.draw(window);
-        // ImGui::ShowTestWindow();
+
+        for(auto &texture: renderTexture)
+            window.draw(sf::Sprite(texture.getTexture()));
+
+        window.resetGLStates();
+
+        //ImGui::ShowTestWindow();
         ImGui::Render();
+
         window.display();
     }
 
