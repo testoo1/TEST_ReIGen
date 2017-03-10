@@ -21,7 +21,7 @@ void Application::processEvent(sf::Clock deltaClock)
 void Application::render()
 {
     m_bg.draw(m_renderTexture[0]);
-    m_figure.draw(m_renderTexture[1]);
+    m_figure.Figure::draw(m_renderTexture[1]);
 
     m_window.clear();
 

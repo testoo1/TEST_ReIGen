@@ -5,7 +5,7 @@
 
 
 class Figure{
-private:
+protected:
     sf::Vector2f    m_center        ={0,0};
     sf::Vector2f    m_initSize      =sf::Vector2f(450,450);
     float           m_scale         =1;
@@ -20,8 +20,6 @@ private:
     bool            m_needRedraw    =true;
 
 public:
-    Figure(){}
-
     create(sf::Vector2f center)
     {
         m_center = center;
@@ -43,18 +41,11 @@ public:
 
 
     void draw(sf::RenderTarget &target);
-    void draw(sf::RenderTarget &target, int depth,
-              sf::Vector2f position, sf::Vector2f size);
+    virtual void draw(sf::RenderTarget &target, int depth,
+              sf::Vector2f position, sf::Vector2f size) = 0;
 
-    void calcSize(){
-        m_size.x = m_initSize.x*m_scale;
-        m_size.y = m_initSize.y*m_scale;
-    }
-
-    void calcStartPoint(){
-        m_startPoint.x = m_center.x - m_size.x/2;
-        m_startPoint.y = m_center.y - m_size.y/2;
-    }
+    void calcSize();
+    virtual void calcStartPoint() = 0;
 
     void needRedraw(){m_needRedraw=true;}
 };
