@@ -118,21 +118,6 @@ void Application::UI(){
         _figure.needRedraw();
     }
 
-    ImGui::Text("Outline Color");
-    int outlineColor[4]{0,0,0,255};
-    if(ImGui::DragInt4("##Outline Color", outlineColor, 1, 0, 255)){
-        _figure.outlineColor(sf::Color(outlineColor[0],outlineColor[1],
-                                       outlineColor[2],outlineColor[3]));
-        _figure.needRedraw();
-    }
-
-    ImGui::Text("");
-    ImGui::Text("Outline Thickness");
-    int outlineThickness{_figure.outlineThickness()};
-    if(ImGui::SliderInt("##outline Thickness", &outlineThickness, 0, -16)){
-        _figure.outlineThickness(outlineThickness);
-        _figure.needRedraw();
-    }
 
     ImGui::Text("");
     ImGui::Separator();

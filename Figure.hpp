@@ -3,12 +3,6 @@
 
 #include <SFML/Graphics.hpp>
 
-struct Outline
-{
-    sf::Color       m_color     =sf::Color::Black;
-    int             m_thickness =1;
-};
-
 
 class Figure{
 private:
@@ -19,7 +13,6 @@ private:
     int             m_depth         =0;
 
     sf::Color       m_color         =sf::Color::White;
-    Outline         m_outline;
 
     sf::Vector2f    m_size;
     sf::Vector2f    m_startPoint;
@@ -39,23 +32,16 @@ public:
     void depth  (int depth){m_depth = depth;}
     void color  (sf::Color color){m_color = color;}
 
-    void outlineColor       (sf::Color color){m_outline.m_color = color;}
-    void outlineThickness   (int thickness){m_outline.m_thickness = thickness;}
-
 // get
     sf::Vector2f center () const {return m_center;}
     float        scale  () const {return m_scale;}
     int          depth  () const {return m_depth;}
     sf::Color    color  () const {return m_color;}
 
-    sf::Color    outlineColor    () const {return m_outline.m_color;}
-    int          outlineThickness() const {return m_outline.m_thickness;}
-
 
     void draw(sf::RenderTarget &target);
     void draw(sf::RenderTarget &target, int depth,
-              sf::Vector2f position, sf::Vector2f size,
-              int thickness);
+              sf::Vector2f position, sf::Vector2f size);
 
     void calcSize(){
         m_size.x = m_initSize.x*m_scale;

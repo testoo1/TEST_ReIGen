@@ -5,21 +5,16 @@ void Figure::draw(sf::RenderTarget &target)
 {
     if(m_needRedraw){
         target.clear(sf::Color(0,0,0,0));
-        draw(target, m_depth, m_startPoint, m_size, m_outline.m_thickness);
+        draw(target, m_depth, m_startPoint, m_size);
         m_needRedraw = false;
     }
 }
 
 void Figure::draw(sf::RenderTarget &target, int depth,
-                  sf::Vector2f position, sf::Vector2f size,
-                  int thickness)
+                  sf::Vector2f position, sf::Vector2f size)
 {
     sf::RectangleShape element;
-
     element.setFillColor(m_color);
-    element.setOutlineThickness(thickness);
-    element.setOutlineColor(m_outline.m_color);
-
 
     if (depth == 0){
         element.setSize(size);
@@ -39,7 +34,7 @@ void Figure::draw(sf::RenderTarget &target, int depth,
             if (depth == 1)
                 target.draw(element);
             else{
-                draw(target, depth-1, point, size/3.f, thickness/2);
+                draw(target, depth-1, point, size/3.f);
             }
          }
 
