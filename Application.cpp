@@ -25,9 +25,12 @@ void Application::render()
 
     m_window.clear();
 
-    for(auto &texture: m_renderTexture)
-        m_window.draw(sf::Sprite(texture.getTexture()));
-
+    for(auto &texture: m_renderTexture){
+        sf::Sprite sprite(texture.getTexture());
+        sprite.setOrigin(0, texture.getSize().y);
+        sprite.setScale(1,-1);
+        m_window.draw(sprite);
+    }
     m_window.resetGLStates();
 
     UI();
