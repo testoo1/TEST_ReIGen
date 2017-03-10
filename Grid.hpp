@@ -1,30 +1,30 @@
-#ifndef GREED_HPP
-#define GREED_HPP
+#ifndef GRID_HPP
+#define GRID_HPP
 
 #include <SFML/Graphics.hpp>
 
 class Grid
 {
 private:
-    sf::RectangleShape _line;
+    sf::RectangleShape m_line;
+    sf::Color m_color;
 
-    int _step;
-    int _thickness;
-    sf::Color _color;
+    int m_step;
+    int m_thickness;
 
 public:
     Grid(sf::Color color=sf::Color::White, int width=1):
-        _color(color), _thickness(width){}
+        m_color(color), m_thickness(width){}
 // set
-    void step(int step){_step = step;}
-    void thickness(int thickness){_thickness = thickness;}
-    void color(sf::Color color){_color = color;}
+    void step(int step){m_step = step;}
+    void thickness(int thickness){m_thickness = thickness;}
+    void color(sf::Color color){m_color = color;}
 // get
-    int step(){return _step;}
-    int width(){return _thickness;}
-    sf::Color color(){return _color;}
+    int step() const {return m_step;}
+    int width() const {return m_thickness;}
+    sf::Color color() const {return m_color;}
 
-    void draw(sf::RenderTarget &window);
+    void draw(sf::RenderTarget &target);
 };
 
 #endif
