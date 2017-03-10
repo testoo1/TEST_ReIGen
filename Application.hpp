@@ -8,7 +8,8 @@
 #include "imgui-sfml.h"
 
 #include "Background.hpp"
-#include "SierpinskiCarpet.hpp"
+#include "SierpinskiTriangle.hpp"
+// #include "SierpinskiCarpet.hpp"
 // #include "Figure.hpp"
 
 
@@ -20,7 +21,7 @@ private:
     std::array<sf::RenderTexture,2> m_renderTexture;
 
     Background          m_bg;
-    SierpinskiCarpet    m_figure;
+    SierpinskiTriangle    m_figure;
 
     int                 m_uiWidth;
     sf::Vector2f        m_canvasCenter;
