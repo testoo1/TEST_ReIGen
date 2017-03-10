@@ -1,16 +1,17 @@
 #include "Background.hpp"
 
-void Background::draw(sf::RenderTarget &window)
+void Background::draw(sf::RenderTarget &target)
 {
-    if(_needRedraw){
-        window.clear(_color);
+    if(m_needRedraw){
+        target.clear(m_color);
 
         for (int i=0;i<3;++i){
-            _grid.step(_step[i]);
-            _grid.color(_color + sf::Color(_grad[i], _grad[i], _grad[i]));
+            m_grid.step(m_step[i]);
+            m_grid.color(m_color + sf::Color(m_grad[i], m_grad[i], m_grad[i],
+            						         m_color.a));
 
-            _grid.draw(window);
+            m_grid.draw(target);
         }
     }
-    _needRedraw = false;
+    m_needRedraw = false;
 }

@@ -6,21 +6,21 @@
 class Background
 {
 private:
-    Grid  _grid;
-    sf::Color _color;
+    Grid  m_grid;
+    sf::Color m_color;
 
-    int _step[3] {12,24,96};
-    int _grad[3] {5,10,25};
+    int m_step[3] {12,24,96};
+    int m_grad[3] {5,10,25};
 
-    bool _needRedraw=true;
+    bool m_needRedraw=true;
 
 public:
-    Background(sf::Color color=sf::Color(30,80,120)) : _color(color){}
+    Background(sf::Color color=sf::Color(30,80,120)) : m_color(color){}
 // set
-    void color(sf::Color color){_color = color;}
-    void needRedraw(){_needRedraw=true;}
+    void color(sf::Color color){m_color = color;}
+    void needRedraw(){m_needRedraw=true;}
 // get
-    sf::Color color(){return _color;}
+    sf::Color color() const {return m_color;}
 
     void draw(sf::RenderTarget &window);
 };
