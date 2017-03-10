@@ -1,51 +1,48 @@
 #include "Figure.hpp"
 
-// Exist some problem with rounding of <Vector2i size> variable
-// For example:
-// if init <size.x> value = 200, is losed 2 pixel when program
-// step into next recurtion level (200/3 -> 198)
-void Figure::draw(sf::RenderTarget &window)
+
+void Figure::draw(sf::RenderTarget &target)
 {
-    if(_needRedraw){
-        window.clear(sf::Color(0,0,0,0));
-        draw(window, _depth, _startPoint, _size, _outline._thickness);
-        _needRedraw = false;
+    if(m_needRedraw){
+        target.clear(sf::Color(0,0,0,0));
+        draw(target, m_depth, m_startPoint, m_size, m_outline.m_thickness);
+        m_needRedraw = false;
     }
 }
 
-void Figure::draw(sf::RenderTarget &window, int depth,
-                  sf::Vector2i position, sf::Vector2i size,
+void Figure::draw(sf::RenderTarget &target, int depth,
+                  sf::Vector2f position, sf::Vector2f size,
                   int thickness)
 {
     sf::RectangleShape element;
 
-    element.setFillColor(_color);
-
+    element.setFillColor(m_color);
     element.setOutlineThickness(thickness);
-    element.setOutlineColor(_outline._color);
+    element.setOutlineColor(m_outline.m_color);
+
 
     if (depth == 0){
-        element.setSize(sf::Vector2f(size.x,size.y));
-        element.setPosition(sf::Vector2f(_startPoint.x,_startPoint.y));
-        window.draw(element);
+        element.setSize(size);
+        element.setPosition(m_startPoint);
+        target.draw(element);
         return;
     }
 
-    element.setSize(sf::Vector2f(size.x/3, size.y/3));
-    sf::Vector2i point(position);
+    element.setSize(size/3.f);
+    sf::Vector2f point(position);
 
     for (int i=1; i<=9; ++i)
     {
         if (i != 5){
-            element.setPosition(sf::Vector2f(point.x,point.y));
+            element.setPosition(point);
 
             if (depth == 1)
-                window.draw(element);
+                target.draw(element);
             else{
-
-                draw(window, depth-1, point, size/3, thickness/2);
+                draw(target, depth-1, point, size/3.f, thickness/2);
             }
          }
+
         if (!(i%3)){
             point.y += size.x/3;
             point.x =  position.x;

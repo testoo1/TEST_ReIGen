@@ -24,16 +24,16 @@ private:
     Figure              _figure;
 
     int                 _uiWidth;
-    sf::Vector2i        _canvasCenter;
+    sf::Vector2f        _canvasCenter;
 public:
     Application(){
         // Window
         _window.create(sf::VideoMode(800,600),"ReIGen", sf::Style::Titlebar|
                                                         sf::Style::Close);
         _window.setVerticalSyncEnabled(true);
-        
+
         _uiWidth = 200;
-        _canvasCenter = sf::Vector2i{(_window.getSize().x - _uiWidth)/2,
+        _canvasCenter = sf::Vector2f{(_window.getSize().x - _uiWidth)/2,
                        _window.getSize().y/2};
 
         for(auto &texture: _renderTexture)
@@ -47,7 +47,7 @@ public:
         _figure.depth(5);
         _figure.calcSize();
         _figure.calcStartPoint();
-      
+
     }
 
     void run();

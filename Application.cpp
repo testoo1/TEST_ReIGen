@@ -47,8 +47,8 @@ void Application::run()
 
 
 void Application::UI(){
-    int imGui_FillColor[4]{255,255,255,255};
-    int imGui_outlineColor[4]{0,0,0,255};
+
+
     int imGui_bgColor[4]{_bg.color().r, _bg.color().g, _bg.color().b, _bg.color().a};
 
 
@@ -86,15 +86,19 @@ void Application::UI(){
 
 
     ImGui::Text("Recursion depth");
-    if(ImGui::SliderInt("##Recursion depth", &_figure._depth, 0, 5)){
+    int depth{_figure.depth()};
+    if(ImGui::SliderInt("##Recursion depth", &depth, 0, 5)){
+        _figure.depth(depth);
         _figure.needRedraw();
     }
 
     ImGui::Text("");
 
     ImGui::Text("Image Scale");
-    if(ImGui::SliderFloat("##Image Scale", &_figure._scale, 0.5, 2))
+    float scale{_figure.scale()};
+    if(ImGui::SliderFloat("##Image Scale", &scale, 0.5, 2))
     {
+        _figure.scale(scale);
         _figure.calcSize();
         _figure.calcStartPoint();
 
@@ -108,29 +112,25 @@ void Application::UI(){
 
 
     ImGui::Text("Fill Color");
-    if(ImGui::DragInt4("##Fill Color", imGui_FillColor, 1, 0, 255)){
-        _figure._color.r = imGui_FillColor[0];
-        _figure._color.g = imGui_FillColor[1];
-        _figure._color.b = imGui_FillColor[2];
-        _figure._color.a = imGui_FillColor[3];
-
+    int color[4]{255,255,255,255};
+    if(ImGui::DragInt4("##Fill Color", color, 1, 0, 255)){
+        _figure.color(sf::Color(color[0],color[1],color[2],color[3]));
         _figure.needRedraw();
     }
 
     ImGui::Text("Outline Color");
-    if(ImGui::DragInt4("##Outline Color", imGui_outlineColor, 1, 0, 255)){
-        _figure._outline._color.r = imGui_outlineColor[0];
-        _figure._outline._color.g = imGui_outlineColor[1];
-        _figure._outline._color.b = imGui_outlineColor[2];
-        _figure._outline._color.a = imGui_outlineColor[3];
-
+    int outlineColor[4]{0,0,0,255};
+    if(ImGui::DragInt4("##Outline Color", outlineColor, 1, 0, 255)){
+        _figure.outlineColor(sf::Color(outlineColor[0],outlineColor[1],
+                                       outlineColor[2],outlineColor[3]));
         _figure.needRedraw();
     }
 
     ImGui::Text("");
     ImGui::Text("Outline Thickness");
-    if(ImGui::SliderInt("##outline Thickness",
-                     &_figure._outline._thickness, 0, -16)){
+    int outlineThickness{_figure.outlineThickness()};
+    if(ImGui::SliderInt("##outline Thickness", &outlineThickness, 0, -16)){
+        _figure.outlineThickness(outlineThickness);
         _figure.needRedraw();
     }
 
