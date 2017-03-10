@@ -1,42 +1,45 @@
 #include "Application.hpp"
 
+#define IM_ARRAYSIZE(ARR)  ((int)(sizeof(ARR)/sizeof(*ARR)))
+
+
 void Application::processEvent(sf::Clock deltaClock)
 {
     sf::Event event;
-    while (_window.pollEvent(event))
+    while (m_window.pollEvent(event))
     {
         ImGui::SFML::ProcessEvent(event);
 
         if (event.type == sf::Event::Closed)
-                _window.close();
+                m_window.close();
     }
 
-    ImGui::SFML::Update(_window, deltaClock.restart());
+    ImGui::SFML::Update(m_window, deltaClock.restart());
 }
 
 
 void Application::render()
 {
-    _bg.draw(_renderTexture[0]);
-    _figure.draw(_renderTexture[1]);
+    m_bg.draw(m_renderTexture[0]);
+    m_figure.draw(m_renderTexture[1]);
 
-    _window.clear();
+    m_window.clear();
 
-    for(auto &texture: _renderTexture)
-        _window.draw(sf::Sprite(texture.getTexture()));
+    for(auto &texture: m_renderTexture)
+        m_window.draw(sf::Sprite(texture.getTexture()));
 
-    _window.resetGLStates();
+    m_window.resetGLStates();
 
     UI();
 
-    _window.display();
+    m_window.display();
 }
 
 
 void Application::run()
 {
     sf::Clock deltaClock;
-    while (_window.isOpen())
+    while (m_window.isOpen())
     {
         processEvent(deltaClock);
         render();
@@ -47,11 +50,6 @@ void Application::run()
 
 
 void Application::UI(){
-
-
-    int imGui_bgColor[4]{_bg.color().r, _bg.color().g, _bg.color().b, _bg.color().a};
-
-
     const char* type[]{"Curve","Gasket"};
     int typeIndex = 1;
 
@@ -60,7 +58,7 @@ void Application::UI(){
 
 // Config UI
     ImGui::SetNextWindowPos(ImVec2(600,0));
-    ImGui::SetNextWindowSize(ImVec2(_uiWidth,600));
+    ImGui::SetNextWindowSize(ImVec2(m_uiWidth,600));
 
     ImGui::Begin("##Settings", false, ImGuiWindowFlags_NoTitleBar|
                                       ImGuiWindowFlags_NoResize|
@@ -86,23 +84,23 @@ void Application::UI(){
 
 
     ImGui::Text("Recursion depth");
-    int depth{_figure.depth()};
+    int depth{m_figure.depth()};
     if(ImGui::SliderInt("##Recursion depth", &depth, 0, 5)){
-        _figure.depth(depth);
-        _figure.needRedraw();
+        m_figure.depth(depth);
+        m_figure.needRedraw();
     }
 
     ImGui::Text("");
 
     ImGui::Text("Image Scale");
-    float scale{_figure.scale()};
+    float scale{m_figure.scale()};
     if(ImGui::SliderFloat("##Image Scale", &scale, 0.5, 2))
     {
-        _figure.scale(scale);
-        _figure.calcSize();
-        _figure.calcStartPoint();
+        m_figure.scale(scale);
+        m_figure.calcSize();
+        m_figure.calcStartPoint();
 
-        _figure.needRedraw();
+        m_figure.needRedraw();
     }
 
 
@@ -112,10 +110,11 @@ void Application::UI(){
 
 
     ImGui::Text("Fill Color");
-    int color[4]{255,255,255,255};
+    int color[4]{m_figure.color().r, m_figure.color().g,
+                 m_figure.color().b, m_figure.color().a};
     if(ImGui::DragInt4("##Fill Color", color, 1, 0, 255)){
-        _figure.color(sf::Color(color[0],color[1],color[2],color[3]));
-        _figure.needRedraw();
+        m_figure.color(sf::Color(color[0],color[1],color[2],color[3]));
+        m_figure.needRedraw();
     }
 
 
@@ -123,12 +122,13 @@ void Application::UI(){
     ImGui::Separator();
     ImGui::Text("");
 
-    ImGui::Text("Background color");
-    if(ImGui::DragInt4("##Background color", imGui_bgColor, 1, 0, 255)){
-        _bg.color(sf::Color(imGui_bgColor[0],imGui_bgColor[1],
-                           imGui_bgColor[2],imGui_bgColor[3]));
 
-        _bg.needRedraw();
+    int bgColor[4]{m_bg.color().r, m_bg.color().g, m_bg.color().b, m_bg.color().a};
+    ImGui::Text("Background color");
+    if(ImGui::DragInt4("##Background color", bgColor, 1, 0, 255)){
+        m_bg.color(sf::Color(bgColor[0],bgColor[1], bgColor[2],bgColor[3]));
+
+        m_bg.needRedraw();
     }
     ImGui::End();
 

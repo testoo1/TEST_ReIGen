@@ -20,8 +20,11 @@ private:
     bool            m_needRedraw    =true;
 
 public:
-    Figure()
+    Figure(){}
+
+    create(sf::Vector2f center)
     {
+        m_center = center;
         calcSize();
         calcStartPoint();
     }
