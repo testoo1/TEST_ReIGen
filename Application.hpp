@@ -8,10 +8,9 @@
 #include "imgui-sfml.h"
 
 #include "Background.hpp"
-#include "SierpinskiTriangle.hpp"
-// #include "SierpinskiCarpet.hpp"
-// #include "Figure.hpp"
+#include "Figure_allType.hpp"
 
+#include <memory>
 
 class Application
 {
@@ -20,11 +19,12 @@ private:
     // [0] -> Background, [1] -> Figure
     std::array<sf::RenderTexture,2> m_renderTexture;
 
-    Background          m_bg;
-    SierpinskiTriangle    m_figure;
+    Background              m_bg;
+    std::unique_ptr<Figure> m_figure;
 
-    int                 m_uiWidth;
-    sf::Vector2f        m_canvasCenter;
+    int                     m_uiWidth;
+    sf::Vector2f            m_canvasCenter;
+
 public:
     Application(){
         // Window
@@ -43,8 +43,9 @@ public:
         ImGui::SFML::Init(m_window);
 
         // Figure
-        m_figure.create(m_canvasCenter);
-        m_figure.depth(5);
+        m_figure = std::make_unique<SierpinskiTriangle>();
+        m_figure->create(m_canvasCenter);
+        m_figure->depth(5);
 
     }
 

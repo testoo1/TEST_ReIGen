@@ -21,7 +21,7 @@ void Application::processEvent(sf::Clock deltaClock)
 void Application::render()
 {
     m_bg.draw(m_renderTexture[0]);
-    m_figure.Figure::draw(m_renderTexture[1]);
+    m_figure->Figure::draw(m_renderTexture[1]);
 
     m_window.clear();
 
@@ -53,11 +53,28 @@ void Application::run()
 
 
 void Application::UI(){
-    const char* type[]{"Curve","Gasket"};
-    int typeIndex = 1;
 
-    const char* gasketSubType[]{"Sierpinski sieves","Sierpinski carpet"};
-    int gasketSubTypeIndex = 1;
+    struct Item
+    {
+        const char*        label;
+        int                current_item;
+        std::vector<char*> items;
+
+        Item(char* _label, std::vector<char*> _items, int _current_item = 0):
+                label(_label), items(_items), current_item(_current_item){}
+    };
+
+    static Item type   ("##Type",    std::vector<char*> {"Gasket"});                //{"Curve","Gasket"}
+    static Item subType("##Subtype", std::vector<char*> {"Sierpinski sieves",
+                                                         "Sierpinski carpet"});
+
+    static int   depth{m_figure->depth()};
+    static float scale{m_figure->scale()};
+
+    static int color[4]  {m_figure->color().r, m_figure->color().g,
+                          m_figure->color().b, m_figure->color().a};
+    static int bgColor[4]{m_bg.color().r, m_bg.color().g,
+                          m_bg.color().b, m_bg.color().a};
 
 // Config UI
     ImGui::SetNextWindowPos(ImVec2(600,0));
@@ -72,13 +89,33 @@ void Application::UI(){
     ImGui::Text("");
 
     ImGui::Text("Type");
-    ImGui::Combo("##Type", &typeIndex, type, IM_ARRAYSIZE(type));
+    ImGui::Combo(type.label, &type.current_item,
+                 type.items.data(), type.items.size());
 
     ImGui::Text("");
 
     ImGui::Text("Subtype");
-    ImGui::Combo("##Subtype", &gasketSubTypeIndex, gasketSubType,
-                 IM_ARRAYSIZE(gasketSubType));
+    if(ImGui::Combo(subType.label, &subType.current_item,
+                    subType.items.data(), subType.items.size())){
+        switch(type.current_item){
+            case(0):
+                switch(subType.current_item){
+                    case(0):
+                        m_figure.reset(new SierpinskiTriangle);
+                        break;
+                    case(1):
+                        m_figure.reset(new SierpinskiCarpet);
+                        break;
+                }
+                break;
+        }
+        m_figure->create(m_canvasCenter);
+        m_figure->depth(depth);
+        m_figure->color(sf::Color(color[0],color[1],color[2],color[3]));
+
+        m_figure->scale(scale);
+        m_figure->calculate();
+    }
 
 
     ImGui::Text("");
@@ -87,23 +124,20 @@ void Application::UI(){
 
 
     ImGui::Text("Recursion depth");
-    int depth{m_figure.depth()};
-    if(ImGui::SliderInt("##Recursion depth", &depth, 0, 5)){
-        m_figure.depth(depth);
-        m_figure.needRedraw();
+    if(ImGui::SliderInt("##Recursion depth", &depth, 0, 6)){
+        m_figure->depth(depth);
+        m_figure->needRedraw();
     }
 
     ImGui::Text("");
 
     ImGui::Text("Image Scale");
-    float scale{m_figure.scale()};
     if(ImGui::SliderFloat("##Image Scale", &scale, 0.5, 2))
     {
-        m_figure.scale(scale);
-        m_figure.calcSize();
-        m_figure.calcStartPoint();
+        m_figure->scale(scale);
+        m_figure->calculate();
 
-        m_figure.needRedraw();
+        m_figure->needRedraw();
     }
 
 
@@ -113,11 +147,9 @@ void Application::UI(){
 
 
     ImGui::Text("Fill Color");
-    int color[4]{m_figure.color().r, m_figure.color().g,
-                 m_figure.color().b, m_figure.color().a};
     if(ImGui::DragInt4("##Fill Color", color, 1, 0, 255)){
-        m_figure.color(sf::Color(color[0],color[1],color[2],color[3]));
-        m_figure.needRedraw();
+        m_figure->color(sf::Color(color[0],color[1],color[2],color[3]));
+        m_figure->needRedraw();
     }
 
 
@@ -126,11 +158,9 @@ void Application::UI(){
     ImGui::Text("");
 
 
-    int bgColor[4]{m_bg.color().r, m_bg.color().g, m_bg.color().b, m_bg.color().a};
     ImGui::Text("Background color");
     if(ImGui::DragInt4("##Background color", bgColor, 1, 0, 255)){
         m_bg.color(sf::Color(bgColor[0],bgColor[1], bgColor[2],bgColor[3]));
-
         m_bg.needRedraw();
     }
     ImGui::End();

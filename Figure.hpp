@@ -23,8 +23,7 @@ public:
     create(sf::Vector2f center)
     {
         m_center = center;
-        calcSize();
-        calcStartPoint();
+        calculate();
     }
 
 // set
@@ -46,6 +45,8 @@ public:
 
     void calcSize();
     virtual void calcStartPoint() = 0;
+
+    void calculate(){calcSize();calcStartPoint();};
 
     void needRedraw(){m_needRedraw=true;}
 };
