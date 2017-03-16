@@ -30,7 +30,8 @@ public:
         // Window
         m_window.create(sf::VideoMode(800,600),"ReIGen", sf::Style::Titlebar|
                                                          sf::Style::Close);
-        m_window.setVerticalSyncEnabled(true);
+        // m_window.setVerticalSyncEnabled(true);
+        m_window.setFramerateLimit(60);
 
         m_uiWidth = 200;
         m_canvasCenter = sf::Vector2f{(m_window.getSize().x - m_uiWidth)/2,
