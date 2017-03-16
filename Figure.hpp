@@ -39,9 +39,7 @@ public:
     sf::Color    color  () const {return m_color;}
 
 
-    void draw(sf::RenderTarget &target);
-    virtual void draw(sf::RenderTarget &target, int depth,
-              sf::Vector2f position, sf::Vector2f size) = 0;
+    virtual void draw(sf::RenderTarget &target) = 0;
 
     void calcSize();
     virtual void calcStartPoint() = 0;

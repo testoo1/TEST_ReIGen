@@ -6,6 +6,15 @@ void SierpinskiCarpet::calcStartPoint(){
     m_startPoint.y = m_center.y - m_size.y/2;
 }
 
+void SierpinskiCarpet::draw(sf::RenderTarget &target)
+{
+    if(m_needRedraw){
+        target.clear(sf::Color(0,0,0,0));
+        draw(target, m_depth, m_startPoint, m_size);
+        m_needRedraw = false;
+    }
+}
+
 void SierpinskiCarpet::draw(sf::RenderTarget &target, int depth,
                   sf::Vector2f position, sf::Vector2f size)
 {
