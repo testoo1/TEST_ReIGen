@@ -1,9 +1,9 @@
 #ifndef FIGURE_ALLTYPE
 #define FIGURE_ALLTYPE
 
-#import "SierpinskiCarpet.hpp"
-#import "SierpinskiTriangle.hpp"
+#include "SierpinskiCarpet.hpp"
+#include "SierpinskiTriangle.hpp"
 
-#import "Curve_Koch.hpp"
+#include "Curve_Koch.hpp"
 
 #endif

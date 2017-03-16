@@ -1,7 +1,7 @@
 #ifndef SIERPINSKI_CARPET_HPP
 #define SIERPINSKI_CARPET_HPP
 
-#import "Figure.hpp"
+#include "Figure.hpp"
 
 
 class SierpinskiCarpet: public Figure

@@ -1,7 +1,7 @@
 #ifndef CURVE_KOCH_HPP
 #define CURVE_KOCH_HPP
 
-#import "Figure.hpp"
+#include "Figure.hpp"
 
 
 class Curve_Koch: public Figure

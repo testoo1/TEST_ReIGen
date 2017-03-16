@@ -1,5 +1,5 @@
-#import "Curve_Koch.hpp"
-#import "math.h"
+#include "Curve_Koch.hpp"
+#include "math.h"
 
 
 void Curve_Koch::calcStartPoint(){

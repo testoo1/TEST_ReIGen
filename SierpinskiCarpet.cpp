@@ -1,4 +1,4 @@
-#import "SierpinskiCarpet.hpp"
+#include "SierpinskiCarpet.hpp"
 
 
 void SierpinskiCarpet::calcStartPoint(){

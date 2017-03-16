@@ -1,7 +1,7 @@
 #ifndef SIERPINSKI_TRIANGLE_HPP
 #define SIERPINSKI_TRIANGLE_HPP
 
-#import "Figure.hpp"
+#include "Figure.hpp"
 
 
 class SierpinskiTriangle: public Figure

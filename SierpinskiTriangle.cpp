@@ -1,5 +1,5 @@
-#import "SierpinskiTriangle.hpp"
-#import "math.h"
+#include "SierpinskiTriangle.hpp"
+#include "math.h"
 
 void SierpinskiTriangle::calcStartPoint(){
     m_startPoint.x = m_center.x - m_size.x/2;
