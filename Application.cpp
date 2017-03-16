@@ -64,9 +64,12 @@ void Application::UI(){
                 label(_label), items(_items), current_item(_current_item){}
     };
 
-    static Item type   ("##Type",    std::vector<char*> {"Gasket"});                //{"Curve","Gasket"}
-    static Item subType("##Subtype", std::vector<char*> {"Sierpinski sieves",
-                                                         "Sierpinski carpet"});
+    static Item type   ("##Type",    std::vector<char*> {"Gasket", "Curve"});
+
+    static std::vector<Item> subType;
+    subType.push_back(Item("##Gasket_Subtype",
+                     std::vector<char*> {"Sierpinski sieves", "Sierpinski carpet"}));
+    subType.push_back(Item("##Curve_Subtype", std::vector<char*> {"Line", "Square"}));
 
     static int   depth{m_figure->depth()};
     static float scale{m_figure->scale()};
@@ -89,19 +92,46 @@ void Application::UI(){
     ImGui::Text("");
 
     ImGui::Text("Type");
-    ImGui::Combo(type.label, &type.current_item,
-                 type.items.data(), type.items.size());
+    if(ImGui::Combo(type.label, &type.current_item,
+                 type.items.data(), type.items.size())){
+        switch(type.current_item){
+            case(0):
+                m_figure.reset(new SierpinskiTriangle);
+                break;
+            case(1):
+                m_figure.reset(new Curve_Koch);
+                break;
+        }
+        m_figure->create(m_canvasCenter);
+        m_figure->depth(depth);
+        m_figure->color(sf::Color(color[0],color[1],color[2],color[3]));
+
+        m_figure->scale(scale);
+        m_figure->calculate();
+    }
 
     ImGui::Text("");
 
     ImGui::Text("Subtype");
-    if(ImGui::Combo(subType.label, &subType.current_item,
-                    subType.items.data(), subType.items.size())){
+    if(ImGui::Combo( subType[type.current_item].label,
+                    &subType[type.current_item].current_item,
+                     subType[type.current_item].items.data(),
+                     subType[type.current_item].items.size())){
         switch(type.current_item){
             case(0):
-                switch(subType.current_item){
+                switch(subType[type.current_item].current_item){
                     case(0):
                         m_figure.reset(new SierpinskiTriangle);
+                        break;
+                    case(1):
+                        m_figure.reset(new SierpinskiCarpet);
+                        break;
+                }
+                break;
+            case(1):
+                switch(subType[type.current_item].current_item){
+                    case(0):
+                        m_figure.reset(new Curve_Koch);
                         break;
                     case(1):
                         m_figure.reset(new SierpinskiCarpet);
