@@ -9,7 +9,7 @@ void SierpinskiCarpet::calcStartPoint(){
 void SierpinskiCarpet::draw(sf::RenderTarget &target)
 {
     if(m_needRedraw){
-        target.clear(sf::Color(0,0,0,0));
+        target.clear(sf::Color::Transparent);
         draw(target, m_depth, m_startPoint, m_size);
         m_needRedraw = false;
     }

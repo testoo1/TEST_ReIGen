@@ -25,9 +25,9 @@ void Curve_Koch::calcStartPoint()
 void Curve_Koch::draw(sf::RenderTarget &target)
 {
     if(m_needRedraw){
-        target.clear(sf::Color(0,0,0,0));
+        target.clear(sf::Color::Transparent);
 
-        m_texture.clear(sf::Color(0,0,0,0));
+        m_texture.clear(sf::Color::Transparent);
 
         draw(m_texture, m_depth, sf::Vector2f(), m_size, 0);
 
