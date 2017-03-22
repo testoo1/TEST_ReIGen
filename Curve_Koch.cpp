@@ -1,17 +1,49 @@
 #include "Curve_Koch.hpp"
 #include "math.h"
 
+Curve_Koch::Curve_Koch(){
+    m_steps[Base::LINE] =
+        {std::make_pair(sf::Vector2f(-0.5,          0), 0)};
+    m_steps[Base::TRIANGLE] =
+        {std::make_pair(sf::Vector2f(   0,       -0.5), 60),
+         std::make_pair(sf::Vector2f( 0.5, 0.5/0.5773), 120),
+         std::make_pair(sf::Vector2f(  -1,          0), 120)};
+    m_steps[Base::SQUARE] =
+        {std::make_pair(sf::Vector2f( -0.5,      -0.5),  0),
+         std::make_pair(sf::Vector2f(    1,         0), 90),
+         std::make_pair(sf::Vector2f(    0,         1), 90),
+         std::make_pair(sf::Vector2f(   -1,         0), 90)};
 
-void Curve_Koch::calcStartPoint(){
-    m_startPoint.x = m_center.x - m_size.x/2;
-    m_startPoint.y = m_center.y;
+    m_texture.create(m_initSize.x*2, (m_initSize.y/4)*2);
+}
+
+void Curve_Koch::calcStartPoint()
+{
+    // pass
 }
 
 void Curve_Koch::draw(sf::RenderTarget &target)
 {
     if(m_needRedraw){
         target.clear(sf::Color(0,0,0,0));
-        draw(target, m_depth, m_startPoint, m_size, 0);
+
+        m_texture.clear(sf::Color(0,0,0,0));
+
+        draw(m_texture, m_depth, sf::Vector2f(), m_size, 0);
+
+        m_sprite.setTexture(m_texture.getTexture());
+        m_sprite.setOrigin(0,m_texture.getSize().y);
+
+        m_sprite.setPosition(m_center);
+        m_sprite.setRotation(0);
+
+        for(auto step: m_steps[m_base]){
+            m_sprite.move(sf::Vector2f(step.first.x * m_size.x,
+                                       step.first.y * m_size.y));
+            m_sprite.rotate(step.second);
+            target.draw(m_sprite);
+        }
+
         m_needRedraw = false;
     }
 }
@@ -19,7 +51,6 @@ void Curve_Koch::draw(sf::RenderTarget &target)
 void Curve_Koch::draw(sf::RenderTarget &target, int depth,
                   sf::Vector2f position, sf::Vector2f size, float angle)
 {
-
     sf::RectangleShape element;
     element.setFillColor(m_color);
     element.setOrigin(0,m_width/2);
@@ -54,13 +85,13 @@ void Curve_Koch::draw(sf::RenderTarget &target, int depth,
                 element.rotate(0);
                 break;
             case(2):
-                element.rotate(-m_angle);
+                element.rotate(m_angle);
                 break;
             case(3):
-                element.rotate(2*m_angle);
+                element.rotate(-2*m_angle);
                 break;
             case(4):
-                element.rotate(-m_angle);
+                element.rotate(m_angle);
                 break;
         }
 

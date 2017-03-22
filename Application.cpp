@@ -64,15 +64,21 @@ void Application::UI(){
                 label(_label), items(_items), current_item(_current_item){}
     };
 
-    static Item type   ("##Type",    std::vector<char*> {"Gasket", "Curve"});
+    static Item type ("##Type",
+                      std::vector<char*> {"Gasket", "Curve"});
 
     static std::vector<Item> subType;
     subType.push_back(Item("##Gasket_Subtype",
                      std::vector<char*> {"Sierpinski sieves", "Sierpinski carpet"}));
-    subType.push_back(Item("##Curve_Subtype", std::vector<char*> {"Line", "Square"}));
+    subType.push_back(Item("##Curve_Subtype",
+                     std::vector<char*> {"Koch", "Square"}));
+    static Item koch_base ("##Koch_base",
+                           std::vector<char*> {"Line", "Triangle", "Square"});
 
     static int   depth{m_figure->depth()};
     static float scale{m_figure->scale()};
+
+    static int  lineWidth(1);
 
     static int color[4]  {m_figure->color().r, m_figure->color().g,
                           m_figure->color().b, m_figure->color().a};
@@ -147,6 +153,32 @@ void Application::UI(){
         m_figure->calculate();
     }
 
+    ImGui::Text("");
+
+    if (type.current_item == 1 && subType[1].current_item == 0){
+        ImGui::Text("Base");
+        if(ImGui::Combo( koch_base.label,
+                     &koch_base.current_item,
+                      koch_base.items.data(),
+                      koch_base.items.size())){
+            Curve_Koch* ckPtr = dynamic_cast<Curve_Koch*>(m_figure.get());
+            switch(koch_base.current_item){
+                case 0:
+                    ckPtr->base(Curve_Koch::Base::LINE);
+                    ckPtr->needRedraw();
+                    break;
+                case 1:
+                    ckPtr->base(Curve_Koch::Base::TRIANGLE);
+                    ckPtr->needRedraw();
+                    break;
+                case 2:
+                    ckPtr->base(Curve_Koch::Base::SQUARE);
+                    ckPtr->needRedraw();
+                    break;
+            }
+
+        }
+    }
 
     ImGui::Text("");
     ImGui::Separator();
@@ -168,6 +200,19 @@ void Application::UI(){
         m_figure->calculate();
 
         m_figure->needRedraw();
+    }
+
+    ImGui::Text("");
+    ImGui::Separator();
+    ImGui::Text("");
+
+    if (type.current_item == 1 && subType[1].current_item == 0){
+        ImGui::Text("Line width");
+        if(ImGui::DragInt("##Line width", &lineWidth, 1, 1, 10)){
+            Curve_Koch* ckPtr = dynamic_cast<Curve_Koch*>(m_figure.get());
+            ckPtr->width(lineWidth);
+            ckPtr->needRedraw();
+        }
     }
 
 
