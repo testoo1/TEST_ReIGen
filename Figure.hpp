@@ -20,7 +20,7 @@ protected:
     bool            m_needRedraw    =true;
 
 public:
-    create(sf::Vector2f center)
+    void create(sf::Vector2f center)
     {
         m_center = center;
         calculate();

@@ -15,6 +15,9 @@ Curve_Koch::Curve_Koch(){
          std::make_pair(sf::Vector2f(   -1,         0), 90)};
 
     m_texture.create(m_initSize.x*2, (m_initSize.y/4)*2);
+
+    m_sprite.setTexture(m_texture.getTexture());
+    m_sprite.setOrigin(0, m_texture.getSize().y);
 }
 
 void Curve_Koch::calcStartPoint()
@@ -30,9 +33,6 @@ void Curve_Koch::draw(sf::RenderTarget &target)
         m_texture.clear(sf::Color::Transparent);
 
         draw(m_texture, m_depth, sf::Vector2f(), m_size, 0);
-
-        m_sprite.setTexture(m_texture.getTexture());
-        m_sprite.setOrigin(0,m_texture.getSize().y);
 
         m_sprite.setPosition(m_center);
         m_sprite.setRotation(0);

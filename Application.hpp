@@ -18,6 +18,7 @@ private:
     sf::RenderWindow    m_window;
     // [0] -> Background, [1] -> Figure
     std::array<sf::RenderTexture,2> m_renderTexture;
+    std::array<sf::Sprite,2>        m_sprite;
 
     Background              m_bg;
     std::unique_ptr<Figure> m_figure;
@@ -37,8 +38,15 @@ public:
         m_canvasCenter = sf::Vector2f{(m_window.getSize().x - m_uiWidth)/2,
                        m_window.getSize().y/2};
 
-        for(auto &texture: m_renderTexture)
-            texture.create(m_window.getSize().x, m_window.getSize().y);
+
+        for(int i=0; i<2; ++i)
+        {
+            m_renderTexture[i].create(m_window.getSize().x,
+                                      m_window.getSize().y);
+            m_sprite[i].setTexture(m_renderTexture[i].getTexture());
+            m_sprite[i].setOrigin(0, m_renderTexture[i].getSize().y);
+            m_sprite[i].setScale(1,-1);
+        }
 
         // UI
         ImGui::SFML::Init(m_window);

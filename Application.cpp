@@ -25,12 +25,10 @@ void Application::render()
 
     m_window.clear();
 
-    for(auto &texture: m_renderTexture){
-        sf::Sprite sprite(texture.getTexture());
-        sprite.setOrigin(0, texture.getSize().y);
-        sprite.setScale(1,-1);
+    for(auto sprite: m_sprite){
         m_window.draw(sprite);
     }
+
     m_window.resetGLStates();
 
     UI();
@@ -51,7 +49,6 @@ void Application::run()
     ImGui::SFML::Shutdown();
 }
 
-
 void Application::UI(){
 
     struct Item
@@ -67,18 +64,19 @@ void Application::UI(){
     static Item type ("##Type",
                       std::vector<char*> {"Gasket", "Curve"});
 
-    static std::vector<Item> subType;
-    subType.push_back(Item("##Gasket_Subtype",
-                     std::vector<char*> {"Sierpinski sieves", "Sierpinski carpet"}));
-    subType.push_back(Item("##Curve_Subtype",
-                     std::vector<char*> {"Koch", "Square"}));
+    static std::vector<Item> subType{
+        Item("##Gasket_Subtype", std::vector<char*> {"Sierpinski sieves",
+                                                     "Sierpinski carpet"}),
+        Item("##Curve_Subtype",  std::vector<char*> {"Koch", "Square"})
+    };
+
     static Item koch_base ("##Koch_base",
                            std::vector<char*> {"Line", "Triangle", "Square"});
 
     static int   depth{m_figure->depth()};
     static float scale{m_figure->scale()};
 
-    static int  lineWidth(1);
+    static int lineWidth(1);
 
     static int color[4]  {m_figure->color().r, m_figure->color().g,
                           m_figure->color().b, m_figure->color().a};
