@@ -67,7 +67,7 @@ void Application::UI(){
     static std::vector<Item> subType{
         Item("##Gasket_Subtype", std::vector<char*> {"Sierpinski sieves",
                                                      "Sierpinski carpet"}),
-        Item("##Curve_Subtype",  std::vector<char*> {"Koch", "Square"})
+        Item("##Curve_Subtype",  std::vector<char*> {"Koch", "Hilbert"})
     };
 
     static Item koch_base ("##Koch_base",
@@ -83,11 +83,11 @@ void Application::UI(){
     static int bgColor[4]{m_bg.color().r, m_bg.color().g,
                           m_bg.color().b, m_bg.color().a};
 
-// Config UI
+    // Config UI
     ImGui::SetNextWindowPos(ImVec2(600,0));
     ImGui::SetNextWindowSize(ImVec2(m_uiWidth,600));
 
-    ImGui::Begin("##Settings", false, ImGuiWindowFlags_NoTitleBar|
+    ImGui::Begin("##Settings", NULL,  ImGuiWindowFlags_NoTitleBar|
                                       ImGuiWindowFlags_NoResize|
                                       ImGuiWindowFlags_NoMove|
                                       ImGuiWindowFlags_NoCollapse|
@@ -138,7 +138,7 @@ void Application::UI(){
                         m_figure.reset(new Curve_Koch);
                         break;
                     case(1):
-                        m_figure.reset(new SierpinskiCarpet);
+                        m_figure.reset(new Curve_Hilbert);
                         break;
                 }
                 break;
@@ -204,12 +204,20 @@ void Application::UI(){
     ImGui::Separator();
     ImGui::Text("");
 
-    if (type.current_item == 1 && subType[1].current_item == 0){
+    if (type.current_item == 1){
         ImGui::Text("Line width");
-        if(ImGui::DragInt("##Line width", &lineWidth, 1, 1, 10)){
-            Curve_Koch* ckPtr = dynamic_cast<Curve_Koch*>(m_figure.get());
-            ckPtr->width(lineWidth);
-            ckPtr->needRedraw();
+// TODO: remove dubbing
+        if(subType[1].current_item == 0)
+            if(ImGui::DragInt("##Line width", &lineWidth, 1, 1, 10)){
+                Curve_Koch* ckPtr = dynamic_cast<Curve_Koch*>(m_figure.get());
+                ckPtr->width(lineWidth);
+                ckPtr->needRedraw();
+        }
+        if(subType[1].current_item == 1)
+            if(ImGui::DragInt("##Line width", &lineWidth, 1, 1, 10)){
+                Curve_Hilbert* ckPtr = dynamic_cast<Curve_Hilbert*>(m_figure.get());
+                ckPtr->width(lineWidth);
+                ckPtr->needRedraw();
         }
     }
 
@@ -241,6 +249,6 @@ void Application::UI(){
     ImGuiStyle& style = ImGui::GetStyle();
     style.WindowPadding.x = 32;
 
-// Render UI
+    // Render UI
     ImGui::Render();
 }
