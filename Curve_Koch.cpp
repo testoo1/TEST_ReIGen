@@ -51,15 +51,16 @@ void Curve_Koch::draw(sf::RenderTarget &target)
 void Curve_Koch::draw(sf::RenderTarget &target, int depth,
                   sf::Vector2f position, sf::Vector2f size, float angle)
 {
-    sf::RectangleShape element;
-    element.setFillColor(m_color);
-    element.setOrigin(0,m_width/2);
-    element.rotate(angle);
+    sf::RectangleShape m_line;
+
+    m_line.setFillColor(m_color);
+    m_line.setOrigin(0,m_width/2);
+    m_line.rotate(angle);
 
     if (depth == 0){
-        element.setSize(sf::Vector2f(m_size.x, m_width));
-        element.setPosition(m_startPoint);
-        target.draw(element);
+        m_line.setSize(sf::Vector2f(m_size.x, m_width));
+        m_line.setPosition(m_startPoint);
+        target.draw(m_line);
         return;
     }
 
@@ -77,31 +78,31 @@ void Curve_Koch::draw(sf::RenderTarget &target, int depth,
 
         line.y = m_width;
 
-        element.setSize(line);
-        element.setPosition(point);
+        m_line.setSize(line);
+        m_line.setPosition(point);
 
         switch(i){
             case(1):
-                element.rotate(0);
+                m_line.rotate(0);
                 break;
             case(2):
-                element.rotate(m_angle);
+                m_line.rotate(m_angle);
                 break;
             case(3):
-                element.rotate(-2*m_angle);
+                m_line.rotate(-2*m_angle);
                 break;
             case(4):
-                element.rotate(m_angle);
+                m_line.rotate(m_angle);
                 break;
         }
 
         if (depth == 1)
-            target.draw(element);
+            target.draw(m_line);
         else{
-            draw(target, depth-1, point, line, element.getRotation());
+            draw(target, depth-1, point, line, m_line.getRotation());
         }
 
-        point.x += element.getSize().x * cos(element.getRotation()*PI/180);
-        point.y += element.getSize().x * sin(element.getRotation()*PI/180);
+        point.x += m_line.getSize().x * cos(m_line.getRotation()*PI/180);
+        point.y += m_line.getSize().x * sin(m_line.getRotation()*PI/180);
     }
 }

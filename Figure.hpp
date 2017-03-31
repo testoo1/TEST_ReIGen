@@ -43,11 +43,11 @@ public:
 
     virtual void draw(sf::RenderTarget &target) = 0;
 
-    void calcSize();
+            void calcSize();
     virtual void calcStartPoint() = 0;
-
-    void calculate(){calcSize(); calcStartPoint();}
-    void update(){calculate(); needRedraw();}
+    virtual void calculate(){calcSize(); calcStartPoint();}
+         
+            void update(){calculate(); needRedraw();}
 
     void needRedraw(){m_needRedraw=true;}
 };

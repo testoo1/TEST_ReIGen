@@ -262,18 +262,10 @@ void Application::UI()
 
     if (type.current_item == 1){
         ImGui::Text("Line width");
-// TODO: remove dubbing
-        if(subType[1].current_item == 0)
-            if(ImGui::DragInt("##Line width", &lineWidth, 1, 1, 10)){
-                Curve_Koch* ckPtr = dynamic_cast<Curve_Koch*>(m_figure.get());
-                ckPtr->width(lineWidth);
-                ckPtr->needRedraw();
-        }
-        if(subType[1].current_item == 1)
-            if(ImGui::DragInt("##Line width", &lineWidth, 1, 1, 10)){
-                Curve_Hilbert* ckPtr = dynamic_cast<Curve_Hilbert*>(m_figure.get());
-                ckPtr->width(lineWidth);
-                ckPtr->needRedraw();
+        if(ImGui::DragInt("##Line width", &lineWidth, 1, 1, 10)){
+            Curve* ckPtr = dynamic_cast<Curve*>(m_figure.get());
+            ckPtr->width(lineWidth);
+            ckPtr->needRedraw();
         }
     }
 

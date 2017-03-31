@@ -1,10 +1,10 @@
 #ifndef CURVE_KOCH_HPP
 #define CURVE_KOCH_HPP
 
-#include "Figure.hpp"
+#include "Curve.hpp"
 
 
-class Curve_Koch: public Figure
+class Curve_Koch: public Curve
 {
 public:
         enum class Base{
@@ -15,7 +15,6 @@ public:
 
 private:
 	float m_angle = 45;
-	int   m_width = 2;
 
 	sf::RenderTexture m_texture;
 	sf::Sprite		  m_sprite;
@@ -36,12 +35,10 @@ public:
 
 // set
     void  angle(float angle) {m_angle = angle;}
-    void  width(float width) {m_width = width;}
     void  base (Base   base) {m_base  =  base;}
 
 // get
     float angle() const {return m_angle;}
-    float width() const {return m_width;}
 };
 
 #endif
