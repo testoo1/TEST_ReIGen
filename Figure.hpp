@@ -46,7 +46,8 @@ public:
     void calcSize();
     virtual void calcStartPoint() = 0;
 
-    void calculate(){calcSize();calcStartPoint();};
+    void calculate(){calcSize(); calcStartPoint();}
+    void update(){calculate(); needRedraw();}
 
     void needRedraw(){m_needRedraw=true;}
 };

@@ -33,8 +33,7 @@ void Application::processEvent(sf::Clock deltaClock)
                 if(m_figure->scale() > MAX_SCALE) m_figure->scale(MAX_SCALE);
                 if(m_figure->scale() < MIN_SCALE) m_figure->scale(MIN_SCALE);
 
-                m_figure->calculate();
-                m_figure->needRedraw();
+                m_figure->update();
                 break;
             }
 
@@ -62,9 +61,7 @@ void Application::processEvent(sf::Clock deltaClock)
     {
         m_point = m_canvasCenter;
         m_figure->center(m_canvasCenter);
-
-        m_figure->calculate();
-        m_figure->needRedraw();
+        m_figure->update();
     }
 
 
@@ -73,9 +70,7 @@ void Application::processEvent(sf::Clock deltaClock)
     {
         auto offset = sf::Mouse::getPosition(m_window) - clickPos;
         m_figure->center(m_point + sf::Vector2f(offset));
-
-        m_figure->calculate();
-        m_figure->needRedraw();
+        m_figure->update();
     }
 
     ImGui::SFML::Update(m_window, deltaClock.restart());
@@ -258,9 +253,7 @@ void Application::UI()
     if(ImGui::SliderFloat("##Image Scale", &scale, 0.5, 2))
     {
         m_figure->scale(scale);
-        m_figure->calculate();
-
-        m_figure->needRedraw();
+        m_figure->update();
     }
 
     ImGui::Text("");
