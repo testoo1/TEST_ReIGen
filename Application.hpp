@@ -25,6 +25,7 @@ private:
 
     int                     m_uiWidth;
     sf::Vector2f            m_canvasCenter;
+    sf::Vector2f            m_point;
 
 public:
     Application(){
@@ -38,6 +39,7 @@ public:
         m_canvasCenter = sf::Vector2f{(m_window.getSize().x - m_uiWidth)/2,
                        m_window.getSize().y/2};
 
+        m_point = m_canvasCenter;
 
         for(int i=0; i<2; ++i)
         {

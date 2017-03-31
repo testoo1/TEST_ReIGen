@@ -1,22 +1,85 @@
 #include "Application.hpp"
 
-#define IM_ARRAYSIZE(ARR)  ((int)(sizeof(ARR)/sizeof(*ARR)))
-
 
 void Application::processEvent(sf::Clock deltaClock)
 {
     sf::Event event;
+
+    const static float MIN_SCALE        = 0.5;
+    const static float MAX_SCALE        =   5;
+    const static float ZOOM_SPEED       = 0.2;
+
+    const static float DOUBLE_CLICK_GAP = 0.2;
+    const static float MOVING_DELAY     = 0.1;
+
+
+    static sf::Clock    clickDelta;
+    static sf::Vector2i clickPos;
+           bool         isDoubleClick{false};
+
     while (m_window.pollEvent(event))
     {
         ImGui::SFML::ProcessEvent(event);
 
-        if (event.type == sf::Event::Closed)
+        switch(event.type){
+            case(sf::Event::Closed):
                 m_window.close();
+                break;
+
+            case(sf::Event::MouseWheelMoved):
+            {
+                m_figure->relScale((event.mouseWheel.delta)*ZOOM_SPEED);
+
+                if(m_figure->scale() > MAX_SCALE) m_figure->scale(MAX_SCALE);
+                if(m_figure->scale() < MIN_SCALE) m_figure->scale(MIN_SCALE);
+
+                m_figure->calculate();
+                m_figure->needRedraw();
+                break;
+            }
+
+            case(sf::Event::MouseButtonPressed):
+                if(event.mouseButton.button == sf::Mouse::Button::Left)
+                {
+                    if(clickDelta.restart().asSeconds() < DOUBLE_CLICK_GAP)
+                    {
+                        isDoubleClick = true;
+                    }
+                    clickPos = sf::Mouse::getPosition(m_window);
+                    break;
+                }
+
+            case(sf::Event::MouseButtonReleased):
+                if(event.mouseButton.button == sf::Mouse::Button::Left)
+                {
+                    m_point = m_figure->center();
+                    break;
+                }
+        }
+    }
+
+    if (isDoubleClick)
+    {
+        m_point = m_canvasCenter;
+        m_figure->center(m_canvasCenter);
+
+        m_figure->calculate();
+        m_figure->needRedraw();
+    }
+
+
+    if (sf::Mouse::isButtonPressed(sf::Mouse::Left) && m_window.hasFocus()
+        && clickDelta.getElapsedTime().asSeconds() > MOVING_DELAY)
+    {
+        auto offset = sf::Mouse::getPosition(m_window) - clickPos;
+        m_figure->center(m_point + sf::Vector2f(offset));
+
+        m_figure->calculate();
+        m_figure->needRedraw();
     }
 
     ImGui::SFML::Update(m_window, deltaClock.restart());
 }
-
 
 void Application::render()
 {
@@ -49,8 +112,8 @@ void Application::run()
     ImGui::SFML::Shutdown();
 }
 
-void Application::UI(){
-
+void Application::UI()
+{
     struct Item
     {
         const char*        label;
@@ -106,7 +169,7 @@ void Application::UI(){
                 m_figure.reset(new Curve_Koch);
                 break;
         }
-        m_figure->create(m_canvasCenter);
+        m_figure->create(m_point);
         m_figure->depth(depth);
         m_figure->color(sf::Color(color[0],color[1],color[2],color[3]));
 
@@ -143,7 +206,7 @@ void Application::UI(){
                 }
                 break;
         }
-        m_figure->create(m_canvasCenter);
+        m_figure->create(m_point);
         m_figure->depth(depth);
         m_figure->color(sf::Color(color[0],color[1],color[2],color[3]));
 

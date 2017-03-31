@@ -32,6 +32,8 @@ public:
     void depth  (int depth){m_depth = depth;}
     void color  (sf::Color color){m_color = color;}
 
+    void relScale (float relScale){m_scale += relScale;}
+
 // get
     sf::Vector2f center () const {return m_center;}
     float        scale  () const {return m_scale;}
