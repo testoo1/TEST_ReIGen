@@ -29,6 +29,9 @@ private:
     sf::Vector2f            m_canvasCenter;
     sf::Vector2f            m_point;
 
+    bool                    m_mouseInActiveZone {false};
+    bool                    m_figureIsGrabbed   {false};
+
 public:
     Application(){
         // Window

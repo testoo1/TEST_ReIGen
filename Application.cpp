@@ -18,25 +18,34 @@ void Application::processEvent(sf::Clock deltaClock)
                 m_window.close();
                 break;
 
-            case(sf::Event::MouseWheelMoved):
-            {
-                m_figure->relScale((event.mouseWheel.delta)*ZOOM_SPEED);
-
-                if(m_figure->scale() > MAX_SCALE) m_figure->scale(MAX_SCALE);
-                if(m_figure->scale() < MIN_SCALE) m_figure->scale(MIN_SCALE);
-
-                m_figure->update();
+            case(sf::Event::MouseMoved):
+                m_mouseInActiveZone = 
+                event.mouseMove.x < (m_window.getSize().x - m_uiWidth)? true :
+                                                                        false;
                 break;
-            }
+
+            case(sf::Event::MouseWheelMoved):
+                if(m_mouseInActiveZone)
+                {
+                    m_figure->relScale((event.mouseWheel.delta)*ZOOM_SPEED);
+
+                    if(m_figure->scale() > MAX_SCALE) m_figure->scale(MAX_SCALE);
+                    if(m_figure->scale() < MIN_SCALE) m_figure->scale(MIN_SCALE);
+
+                    m_figure->update();
+                    break;
+                }
 
             case(sf::Event::MouseButtonPressed):
-                if(event.mouseButton.button == sf::Mouse::Button::Left)
+                if(event.mouseButton.button == sf::Mouse::Button::Left
+                   && m_mouseInActiveZone)
                 {
                     if(clickDelta.restart().asSeconds() < DOUBLE_CLICK_GAP)
                     {
                         isDoubleClick = true;
                     }
                     clickPos = sf::Mouse::getPosition(m_window);
+                    m_figureIsGrabbed = true;
                     break;
                 }
 
@@ -44,12 +53,13 @@ void Application::processEvent(sf::Clock deltaClock)
                 if(event.mouseButton.button == sf::Mouse::Button::Left)
                 {
                     m_point = m_figure->center();
+                    m_figureIsGrabbed = false;
                     break;
                 }
         }
     }
 
-    if (isDoubleClick)
+    if (isDoubleClick && m_mouseInActiveZone)
     {
         m_point = m_canvasCenter;
         m_figure->center(m_canvasCenter);
@@ -57,8 +67,10 @@ void Application::processEvent(sf::Clock deltaClock)
     }
 
 
-    if (sf::Mouse::isButtonPressed(sf::Mouse::Left) && m_window.hasFocus()
-        && clickDelta.getElapsedTime().asSeconds() > MOVING_DELAY)
+    if (sf::Mouse::isButtonPressed(sf::Mouse::Left)
+        && m_window.hasFocus()
+        && clickDelta.getElapsedTime().asSeconds() > MOVING_DELAY
+        && m_figureIsGrabbed)
     {
         auto offset = sf::Mouse::getPosition(m_window) - clickPos;
         m_figure->center(m_point + sf::Vector2f(offset));
