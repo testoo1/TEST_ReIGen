@@ -3,9 +3,13 @@
 
 void Curve::calcLineWidth()
 {
-	m_width = static_cast<int>(m_initWidth * m_scale);
-	if(m_width < 1)
-		m_width = 1;
+	if(m_widthIsZoomable){
+		m_width = static_cast<int>(m_initWidth * m_scale);
+		if(m_width < 1)
+			m_width = 1;
+	}else{
+		m_width = m_initWidth;
+	}
 }
 	
 void Curve::calculate()
@@ -20,5 +24,5 @@ void Curve::calculate()
 void  Curve::width(float width)
 {
 	m_initWidth = width;
-    m_width     = width*m_scale;
+	m_width = m_widthIsZoomable? width * m_scale : width;
 }

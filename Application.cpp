@@ -145,6 +145,8 @@ void Application::UI()
     static int bgColor[4]{m_bg.color().r, m_bg.color().g,
                           m_bg.color().b, m_bg.color().a};
 
+    static bool widthIsZoomable{false};
+
     // Config UI
     ImGui::SetNextWindowPos(ImVec2(600,0));
     ImGui::SetNextWindowSize(ImVec2(m_uiWidth,600));
@@ -210,8 +212,9 @@ void Application::UI()
         m_figure->color(sf::Color(color[0],color[1],color[2],color[3]));
 
         if(type.current_item == 1){
-            Curve* ckPtr = dynamic_cast<Curve*>(m_figure.get());
-            ckPtr->width(lineWidth);
+            Curve* curvePtr = dynamic_cast<Curve*>(m_figure.get());
+            curvePtr->width(lineWidth);
+            curvePtr->widthIsZoomable(widthIsZoomable);
         }
 
         m_figure->scale(scale);
@@ -269,29 +272,39 @@ void Application::UI()
     ImGui::Text("");
 
     if(type.current_item == 1){
+        Curve* curvePtr = dynamic_cast<Curve*>(m_figure.get());
+
         ImGui::Text("Line width");
         if(ImGui::DragInt("##Line width", &lineWidth, 1, 1, 10)){
-            Curve* ckPtr = dynamic_cast<Curve*>(m_figure.get());
-            ckPtr->width(lineWidth);
-            ckPtr->needRedraw();
+            curvePtr->width(lineWidth);
+            curvePtr->needRedraw();
         }
-    }
 
-    static int angle{60};
-    if(type.current_item == 1){
-        if(subType[1].current_item == 0){
-            ImGui::Text("Angle");
-            if(ImGui::DragInt("##Angle", &angle, 1, 0, 180)){
-                Curve_Koch* ckPtr = dynamic_cast<Curve_Koch*>(m_figure.get());
-                ckPtr->angle(angle);
-                ckPtr->needRedraw();
+        if(ImGui::Checkbox("is zoomable", &widthIsZoomable)){
+            curvePtr->widthIsZoomable(widthIsZoomable);
+            curvePtr->calcLineWidth();
+            curvePtr->needRedraw();
+        }
+
+
+        ImGui::Text("");
+
+        static int angle{60};
+        if(type.current_item == 1){
+            if(subType[1].current_item == 0){
+                ImGui::Text("Angle");
+                if(ImGui::DragInt("##Angle", &angle, 1, 0, 180)){
+                    Curve_Koch* curvePtr = dynamic_cast<Curve_Koch*>(m_figure.get());
+                    curvePtr->angle(angle);
+                    curvePtr->needRedraw();
+                }
             }
         }
-    }
 
-    ImGui::Text("");
-    ImGui::Separator();
-    ImGui::Text("");
+        ImGui::Text("");
+        ImGui::Separator();
+        ImGui::Text("");
+    }
 
 
     ImGui::Text("Fill Color");
