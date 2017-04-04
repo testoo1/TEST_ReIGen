@@ -10,6 +10,8 @@
 #include "Background.hpp"
 #include "Figure_allType.hpp"
 
+#include "Constants.hpp"
+
 #include <memory>
 
 class Application

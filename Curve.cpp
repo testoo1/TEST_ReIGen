@@ -3,7 +3,7 @@
 
 void Curve::calcLineWidth()
 {
-	m_width = m_initWidth*m_scale;
+	m_width = static_cast<int>(m_initWidth * m_scale);
 	if(m_width < 1)
 		m_width = 1;
 }

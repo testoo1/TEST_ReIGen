@@ -5,14 +5,6 @@ void Application::processEvent(sf::Clock deltaClock)
 {
     sf::Event event;
 
-    const static float MIN_SCALE        = 0.5;
-    const static float MAX_SCALE        =   5;
-    const static float ZOOM_SPEED       = 0.2;
-
-    const static float DOUBLE_CLICK_GAP = 0.2;
-    const static float MOVING_DELAY     = 0.1;
-
-
     static sf::Clock    clickDelta;
     static sf::Vector2i clickPos;
            bool         isDoubleClick{false};
@@ -205,13 +197,18 @@ void Application::UI()
         m_figure->depth(depth);
         m_figure->color(sf::Color(color[0],color[1],color[2],color[3]));
 
+        if(type.current_item == 1){
+            Curve* ckPtr = dynamic_cast<Curve*>(m_figure.get());
+            ckPtr->width(lineWidth);
+        }
+
         m_figure->scale(scale);
         m_figure->calculate();
     }
 
     ImGui::Text("");
 
-    if (type.current_item == 1 && subType[1].current_item == 0){
+    if(type.current_item == 1 && subType[1].current_item == 0){
         ImGui::Text("Base");
         if(ImGui::Combo( koch_base.label,
                      &koch_base.current_item,
@@ -250,8 +247,7 @@ void Application::UI()
     ImGui::Text("");
 
     ImGui::Text("Image Scale");
-    if(ImGui::SliderFloat("##Image Scale", &scale, 0.5, 2))
-    {
+    if(ImGui::SliderFloat("##Image Scale", &scale, 0.5, 2)){
         m_figure->scale(scale);
         m_figure->update();
     }
@@ -260,7 +256,7 @@ void Application::UI()
     ImGui::Separator();
     ImGui::Text("");
 
-    if (type.current_item == 1){
+    if(type.current_item == 1){
         ImGui::Text("Line width");
         if(ImGui::DragInt("##Line width", &lineWidth, 1, 1, 10)){
             Curve* ckPtr = dynamic_cast<Curve*>(m_figure.get());
@@ -269,6 +265,17 @@ void Application::UI()
         }
     }
 
+    static int angle{60};
+    if(type.current_item == 1){
+        if(subType[1].current_item == 0){
+            ImGui::Text("Angle");
+            if(ImGui::DragInt("##Angle", &angle, 1, 0, 180)){
+                Curve_Koch* ckPtr = dynamic_cast<Curve_Koch*>(m_figure.get());
+                ckPtr->angle(angle);
+                ckPtr->needRedraw();
+            }
+        }
+    }
 
     ImGui::Text("");
     ImGui::Separator();

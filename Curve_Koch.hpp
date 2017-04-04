@@ -2,19 +2,20 @@
 #define CURVE_KOCH_HPP
 
 #include "Curve.hpp"
+#include "Constants.hpp"
 
 
 class Curve_Koch: public Curve
 {
 public:
-        enum class Base{
+    enum class Base{
     	LINE,
     	TRIANGLE,
     	SQUARE
     };
 
 private:
-	float m_angle = 45;
+	float m_angle = 60;
 
 	sf::RenderTexture m_texture;
 	sf::Sprite		  m_sprite;
@@ -22,6 +23,8 @@ private:
 	Base m_base = Base::LINE;
 
     std::map<Base, std::vector<std::pair<sf::Vector2f, int>>> m_steps;
+
+    int m_offset = static_cast<int>((MAX_WIDTH * MAX_SCALE)/2);
 
 public:
 	virtual void draw(sf::RenderTarget &target) override;

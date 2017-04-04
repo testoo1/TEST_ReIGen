@@ -18,6 +18,7 @@ void Curve_Hilbert::draw(sf::RenderTarget &target)
             m_circle.setPosition(m_startPoint);
             m_circle.setRadius(m_width/2);
             m_circle.setOrigin(m_width/2, m_width/2);
+            m_circle.setFillColor(m_color);
             target.draw(m_circle);
         }
 

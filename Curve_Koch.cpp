@@ -1,5 +1,6 @@
 #include "Curve_Koch.hpp"
 #include "math.h"
+#include <iostream>
 
 Curve_Koch::Curve_Koch(){
     m_steps[Base::LINE] =
@@ -14,10 +15,12 @@ Curve_Koch::Curve_Koch(){
          std::make_pair(sf::Vector2f(    0,         1), 90),
          std::make_pair(sf::Vector2f(   -1,         0), 90)};
 
-    m_texture.create(m_initSize.x*2, (m_initSize.y/4)*2);
+
+    m_texture.create(m_initSize.x * MAX_SCALE     + m_offset,
+                     m_initSize.y * MAX_SCALE / 3 + m_offset * 2);
 
     m_sprite.setTexture(m_texture.getTexture());
-    m_sprite.setOrigin(0, m_texture.getSize().y);
+    m_sprite.setOrigin(m_offset, m_texture.getSize().y - m_offset);
 }
 
 void Curve_Koch::calcStartPoint()
@@ -29,10 +32,20 @@ void Curve_Koch::draw(sf::RenderTarget &target)
 {
     if(m_needRedraw){
         target.clear(sf::Color::Transparent);
-
         m_texture.clear(sf::Color::Transparent);
 
-        draw(m_texture, m_depth, sf::Vector2f(), m_size, 0);
+        m_line.setOrigin(0, m_width/2);
+        m_line.setFillColor(m_color);
+
+        if(m_width > 1){
+            m_circle.setRadius(m_width/2);
+            m_circle.setOrigin(m_width/2, m_width/2);
+            m_circle.setFillColor(m_color);
+            m_circle.setPosition(sf::Vector2f(m_offset, m_offset));
+            m_texture.draw(m_circle);
+        }
+
+        draw(m_texture, m_depth, sf::Vector2f(m_offset,m_offset), m_size, 0);
 
         m_sprite.setPosition(m_center);
         m_sprite.setRotation(0);
@@ -51,58 +64,43 @@ void Curve_Koch::draw(sf::RenderTarget &target)
 void Curve_Koch::draw(sf::RenderTarget &target, int depth,
                   sf::Vector2f position, sf::Vector2f size, float angle)
 {
-    sf::RectangleShape m_line;
+    static double PI = 3.14159265359;
+    static auto dCos = [](float angle){return (cos(angle*PI/180));};
+    static auto dSin = [](float angle){return (sin(angle*PI/180));};
 
-    m_line.setFillColor(m_color);
-    m_line.setOrigin(0,m_width/2);
-    m_line.rotate(angle);
-
-    if (depth == 0){
-        m_line.setSize(sf::Vector2f(m_size.x, m_width));
-        m_line.setPosition(m_startPoint);
+    if(depth == 0){
+        m_line.setPosition(sf::Vector2f(position.x, position.y));
+        m_line.setSize(sf::Vector2f(size.x, m_width));
+        m_line.setRotation(angle);
+        
         target.draw(m_line);
-        return;
-    }
 
-    const static double PI = 3.14159265359;
-    sf::Vector2f line;
-    sf::Vector2f point(position);
-
-
-    for (int i=1; i<=4; ++i)
-    {
-        if(i == 1 || i == 4)
-            line.x = size.x/4.f * (1 + (1 - cos(m_angle*PI/180)));
-        else
-            line.x = size.x/4.f;
-
-        line.y = m_width;
-
-        m_line.setSize(line);
-        m_line.setPosition(point);
-
-        switch(i){
-            case(1):
-                m_line.rotate(0);
-                break;
-            case(2):
-                m_line.rotate(m_angle);
-                break;
-            case(3):
-                m_line.rotate(-2*m_angle);
-                break;
-            case(4):
-                m_line.rotate(m_angle);
-                break;
+        if(m_width > 1){
+            m_circle.setPosition(sf::Vector2f(position.x + size.x * dCos(angle),
+                                              position.y + size.x * dSin(angle)));
+            target.draw(m_circle);
         }
+    }else{
+        size /= 3.f;
+        auto delta  = size.x*(dCos(60) - dCos(m_angle));
+        auto deltaX = static_cast<float>(delta * dCos(angle));
+        auto deltaY = static_cast<float>(delta * dSin(angle));
 
-        if (depth == 1)
-            target.draw(m_line);
-        else{
-            draw(target, depth-1, point, line, m_line.getRotation());
-        }
+        auto p1 = position;
+        auto p2 = p1 + sf::Vector2f(size.x * dCos(angle) + deltaX,
+                                    size.x * dSin(angle) + deltaY);
+        auto p3 = p2 + sf::Vector2f(size.x * dCos(angle + m_angle),
+                                    size.x * dSin(angle + m_angle));
+        auto p4 = p3 + sf::Vector2f(size.x * dCos(angle - m_angle),
+                                    size.x * dSin(angle - m_angle));
 
-        point.x += m_line.getSize().x * cos(m_line.getRotation()*PI/180);
-        point.y += m_line.getSize().x * sin(m_line.getRotation()*PI/180);
+        draw(target, depth-1, p2, size, angle + m_angle);
+        draw(target, depth-1, p3, size, angle - m_angle);
+
+        size.x +=  delta;
+        draw(target, depth-1, p1, size, angle);
+        draw(target, depth-1, p4, size, angle);
+
+
     }
 }
