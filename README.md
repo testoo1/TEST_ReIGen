@@ -1,51 +1,27 @@
-Package Control Messages
-========================
+**Проект бессрочно заморожен**
 
-GitGutter
----------
+---
 
-  1.7.6:
-  ------
-  
-     C H A N G E L O G
-  
-    Fix:
-     - Enable GitGuter incase "git_gutter_enable" is not present.
-     - Support Info module provides no GitGutter version.
-     - Calling git_gutter_diff_popup with missing mdpopups causes exception.
-  
-    README:
-     - Update Troubleshooting for MacOS Xcode license.
-     - Added Monokai Pro to supported color schemes list.
-  
-    Enhancement:
-     - Improve diff popup visibility on light color schemes
-     - Show commit details in Compare against branch/tag
-  
-  
-  💛 Git Gutter? Want to support development?
-  
-  I've teamed up with Wes Bos to offer the following discounts:
-  
-  +------------------------------------------------+
-  |                                                |
-  |   Use the coupon code GITGUTTER for $10 off    |
-  |                                                |
-  +------------------------------------------------+
-  
-  🏅 ⭐ ES6 ⭐
-  
-  👉 ES6.io/friend/GITGUTTER
-  
-  🏅 ⭐ Sublime Text Book ⭐
-  
-  👉 SublimeTextBook.com/friend/GITGUTTER
-  
-  🏅 ⭐ React For Beginners ⭐
-  
-  👉 ReactForBeginners.com/friend/GITGUTTER
-  
-  
-  Join 15,000 other developers already learning with Wes Bos.
-  
-  These are fantastic resources - 100% money back guarantee! 🌟
+Программа для построения фрактальных изображений.
+
+На момент заморозки проекта реализованы следующие фракталы:
+* [Треугольник Серпинского](https://ru.wikipedia.org/wiki/%D0%A2%D1%80%D0%B5%D1%83%D0%B3%D0%BE%D0%BB%D1%8C%D0%BD%D0%B8%D0%BA_%D0%A1%D0%B5%D1%80%D0%BF%D0%B8%D0%BD%D1%81%D0%BA%D0%BE%D0%B3%D0%BE)
+* [Ковёр Серпинского](https://ru.wikipedia.org/wiki/%D0%9A%D0%BE%D0%B2%D1%91%D1%80_%D0%A1%D0%B5%D1%80%D0%BF%D0%B8%D0%BD%D1%81%D0%BA%D0%BE%D0%B3%D0%BE)
+* [Кривая Коха](https://ru.wikipedia.org/wiki/%D0%9A%D1%80%D0%B8%D0%B2%D0%B0%D1%8F_%D0%9A%D0%BE%D1%85%D0%B0)
+* [Кривая Гильберта](https://ru.wikipedia.org/wiki/%D0%9A%D1%80%D0%B8%D0%B2%D0%B0%D1%8F_%D0%93%D0%B8%D0%BB%D1%8C%D0%B1%D0%B5%D1%80%D1%82%D0%B0)
+
+---
+
+**Управление:**
+
+колесико мыши - приблизить/отдалить изображение
+
+перемещение мыши с зажатой левой клавишей - перемещение изображения
+
+двойной щелчок левой клавишей мыши - отцентрировать изображение
+
+---
+
+**Известные проблемы:**
+
+* На компьютерах с малым количеством графической памяти программа может работать некоректно (часть элементов не будет отображаться)
