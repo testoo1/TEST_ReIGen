@@ -1,6 +1,10 @@
+### ReIGen
+
 **Проект бессрочно заморожен**
 
 ---
+
+![example](https://raw.githubusercontent.com/testoo1/TEST_GFOR/master/C%2B%2B_ReIGen/C%2B%2B_ReIGen.gif)
 
 Программа для построения фрактальных изображений.
 
