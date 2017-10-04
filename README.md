@@ -4,7 +4,7 @@
 
 ---
 
-![example](https://raw.githubusercontent.com/testoo1/TEST_GFOR/master/C%2B%2B_ReIGen/C%2B%2B_ReIGen.gif)
+![example](https://raw.githubusercontent.com/testoo1/TEST_GFOR/master/C%2B%2B_ReIGen/ReIGen.gif)
 
 Программа для построения фрактальных изображений.
 
@@ -29,7 +29,7 @@
 
 Для сборки программы из исходников необходимы следующие библиотеки:
 * [SFML](https://github.com/SFML/SFML) - используется для вывода графики
-* [ImGui](https://github.com/ocornut/imgui) - используется для отрисовки UI
+* [dear imgui](https://github.com/ocornut/imgui) - используется для отрисовки UI
 
 
 ---
